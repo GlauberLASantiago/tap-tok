@@ -138,6 +138,11 @@
             color: #1f1103;
         }
 
+        .seg-btn[data-view="misto"].active {
+            background: var(--accent-green);
+            color: #032219;
+        }
+
         .seg-btn[data-view="compare"].active {
             background: linear-gradient(135deg, var(--straight-color), var(--triplet-color));
             color: #05080f;
@@ -202,6 +207,18 @@
             border-color: var(--straight-color);
             background: var(--straight-bg);
             color: var(--straight-color);
+        }
+
+        .btn-count.active {
+            border-color: var(--triplet-color);
+            background: var(--triplet-bg);
+            color: #fde68a;
+        }
+
+        .btn-sync.active {
+            border-color: var(--swing-color);
+            background: rgba(236, 72, 153, 0.18);
+            color: #fbcfe8;
         }
 
         .btn-metro.active {
@@ -271,6 +288,68 @@
             .bpm-slider { display: none; }
         }
 
+        /* Gaveta retrátil de Delay / Sincronia Bluetooth */
+        .sync-drawer {
+            background: #060a12;
+            border: 1px solid #2e3d52;
+            border-radius: 5px;
+            padding: 5px 7px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .sync-drawer.hidden {
+            display: none;
+        }
+
+        .sync-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 5px;
+            flex-wrap: wrap;
+        }
+
+        .sync-title {
+            font-size: 0.63rem;
+            font-weight: 800;
+            color: #fbcfe8;
+        }
+
+        .sync-val {
+            font-family: var(--font-mono);
+            font-size: 0.68rem;
+            font-weight: 900;
+            color: var(--playhead);
+            min-width: 58px;
+            text-align: right;
+        }
+
+        .sync-slider {
+            flex: 1;
+            min-width: 90px;
+            height: 4px;
+            accent-color: var(--swing-color);
+        }
+
+        .sync-preset-btn {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            color: var(--text-muted);
+            font-size: 0.6rem;
+            font-weight: 800;
+            padding: 2px 5px;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+
+        .sync-preset-btn:hover, .sync-preset-btn.active {
+            border-color: var(--swing-color);
+            color: #fff;
+            background: rgba(236, 72, 153, 0.25);
+        }
+
         /* 3. BLOCOS INTERCALADOS (SEQUENCIADOR + PARTITURA ABAIXO) */
         .track-block {
             background: var(--bg-panel);
@@ -288,6 +367,10 @@
 
         .track-block.triplet-block {
             border-left: 3px solid var(--triplet-color);
+        }
+
+        .track-block.mixed-block {
+            border-left: 3px solid var(--accent-green);
         }
 
         .track-block.hidden {
@@ -319,6 +402,7 @@
 
         .straight-block .track-title { color: var(--straight-color); }
         .triplet-block .track-title { color: var(--triplet-color); }
+        .mixed-block .track-title   { color: var(--accent-green); }
 
         .track-hint {
             font-size: 0.62rem;
@@ -423,6 +507,54 @@
         .beat-col.playing-beat {
             border-color: var(--playhead);
             background: rgba(253, 224, 71, 0.08);
+        }
+
+        /* Cabeçalho seletor ÷2 / ÷3 por tempo no Modo Misto */
+        .beat-div-toggle {
+            background: #111c2d;
+            border: none;
+            border-bottom: 1px solid #26354d;
+            color: var(--text-muted);
+            font-family: var(--font-mono);
+            font-size: 0.56rem;
+            font-weight: 900;
+            height: 15px;
+            width: 100%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1px;
+            border-radius: 2px 2px 0 0;
+            margin-bottom: 1px;
+            padding: 0;
+        }
+
+        .beat-div-toggle.is-div2 {
+            color: var(--straight-color);
+            background: rgba(56, 189, 248, 0.12);
+        }
+
+        .beat-div-toggle.is-div3 {
+            color: var(--triplet-color);
+            background: rgba(245, 158, 11, 0.14);
+        }
+
+        /* Badge SWING compacto quando o tempo tem [1,0,1] */
+        .swing-badge {
+            position: absolute;
+            top: -5px;
+            right: 1px;
+            background: var(--swing-color);
+            color: #fff;
+            font-size: 0.45rem;
+            font-weight: 900;
+            padding: 0 3px;
+            border-radius: 2px;
+            letter-spacing: 0.02em;
+            pointer-events: none;
+            z-index: 3;
+            line-height: 1.2;
         }
 
         /* Sub-grid de células dentro de cada tempo */
@@ -532,13 +664,13 @@
 
         .presets-grid {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
+            grid-template-columns: repeat(5, 1fr);
             gap: 3px;
         }
 
-        @media (max-width: 420px) {
+        @media (max-width: 480px) {
             .presets-grid {
-                grid-template-columns: repeat(2, 1fr);
+                grid-template-columns: repeat(3, 1fr);
             }
         }
 
@@ -548,7 +680,7 @@
             color: var(--text-main);
             border-radius: 4px;
             padding: 4px 3px;
-            font-size: 0.63rem;
+            font-size: 0.61rem;
             font-weight: 800;
             cursor: pointer;
             text-align: center;
@@ -567,12 +699,17 @@
             color: #fbcfe8;
         }
 
+        .preset-btn.mixed-preset {
+            border-color: rgba(16, 185, 129, 0.5);
+            color: #a7f3d0;
+        }
+
         /* Resumo Conceitual Enxuto */
         .concept-summary {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: repeat(4, 1fr);
             gap: 4px;
-            font-size: 0.62rem;
+            font-size: 0.61rem;
             color: var(--text-muted);
             background: #070b12;
             padding: 4px;
@@ -580,10 +717,10 @@
             border: 1px solid #1a2436;
         }
 
-        @media (max-width: 480px) {
+        @media (max-width: 540px) {
             .concept-summary {
-                grid-template-columns: 1fr;
-                gap: 2px;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 3px;
             }
         }
 
@@ -594,6 +731,7 @@
         .c-straight strong { color: var(--straight-color); }
         .c-triplet strong  { color: var(--triplet-color); }
         .c-swing strong    { color: #f472b6; }
+        .c-mixed strong    { color: var(--accent-green); }
 
         /* 5. RODAPÉ COM DEDICATÓRIA E CRÉDITOS */
         .footer-credit {
@@ -710,6 +848,11 @@
             border-left-color: var(--swing-color);
         }
 
+        .theory-highlight.mixed-hl {
+            background: rgba(16, 185, 129, 0.1);
+            border-left-color: var(--accent-green);
+        }
+
         .theory-list {
             padding-left: 16px;
             display: flex;
@@ -732,18 +875,23 @@
         <div class="seg-group" id="viewModeSelector" title="Modo de visualização">
             <button type="button" class="seg-btn active" data-view="straight">STRAIGHT</button>
             <button type="button" class="seg-btn" data-view="triplets">TRIPLETS</button>
+            <button type="button" class="seg-btn" data-view="misto">MISTO</button>
             <button type="button" class="seg-btn" data-view="compare">COMPARE</button>
         </div>
     </header>
 
     <!-- 2. CONTROLES GERAIS E TRANSPORTE COMPACTOS -->
     <section class="control-strip" aria-label="Controles e Reprodução">
-        <!-- Linha 1: Compasso, BPM e Metrônomo -->
+        <!-- Linha 1: Compasso, Contagem 1-8, BPM, Sync Bluetooth e Metrônomo -->
         <div class="control-row">
             <div class="seg-group" id="meterSelector" title="Fórmula de Compasso">
                 <button type="button" class="seg-btn active" data-beats="4">4/4</button>
                 <button type="button" class="seg-btn" data-beats="3">3/4</button>
             </div>
+
+            <button type="button" class="ctrl-btn btn-count active" id="countModeBtn" title="Alternar numeração do Compasso 2 (1-4 | 1-4 ou Contagem de Sapateado 1-8 / 1-6)">
+                <span id="countModeText">🔢 1–8</span>
+            </button>
 
             <div class="bpm-box" title="Andamento (40 a 240 BPM)">
                 <button type="button" class="bpm-step" id="bpmMinusBtn" aria-label="Diminuir BPM">−</button>
@@ -752,10 +900,28 @@
                 <input type="range" id="bpmSlider" class="bpm-slider" min="40" max="240" value="100">
             </div>
 
+            <button type="button" class="ctrl-btn btn-sync" id="syncDrawerBtn" title="Ajustar sincronia visual com o som (Delay Bluetooth)">
+                <span id="syncBtnText">⏱ Sync</span>
+            </button>
+
             <button type="button" class="ctrl-btn btn-metro active" id="metroToggleBtn" title="Ativar/Desativar Metrônomo">
                 <span class="metro-dot" id="metroDot"></span>
-                <span id="metroText">METRÔNOMO</span>
+                <span id="metroText">METRÔ</span>
             </button>
+        </div>
+
+        <!-- Gaveta Retrátil de Calibração de Delay (Bluetooth / Áudio) -->
+        <div class="sync-drawer hidden" id="syncDrawer">
+            <div class="sync-row">
+                <span class="sync-title">🎧 Sincronia Visual / Áudio (Delay Bluetooth):</span>
+                <span class="sync-val" id="delayValueDisplay">0 ms</span>
+            </div>
+            <div class="sync-row">
+                <input type="range" id="delaySlider" class="sync-slider" min="-150" max="500" step="10" value="0">
+                <button type="button" class="sync-preset-btn active" data-delay="0">0ms (Cabo/Alto-falante)</button>
+                <button type="button" class="sync-preset-btn" data-delay="120">+120ms</button>
+                <button type="button" class="sync-preset-btn" data-delay="220">+220ms (Bluetooth)</button>
+            </div>
         </div>
 
         <!-- Linha 2: Play/Pause, Stop, Loop, Aleatório, Limpar -->
@@ -798,8 +964,8 @@
         </div>
 
         <div class="measures-banner">
-            <div class="measure-tag"><span>Compasso 1</span><span id="m1TagStraight">4/4</span></div>
-            <div class="measure-tag"><span>Compasso 2</span><span id="m2TagStraight">4/4</span></div>
+            <div class="measure-tag"><span id="m1LabelStraight">Compasso 1 (1–4)</span><span id="m1TagStraight">4/4</span></div>
+            <div class="measure-tag"><span id="m2LabelStraight">Compasso 2 (5–8)</span><span id="m2TagStraight">4/4</span></div>
         </div>
 
         <!-- Grade de 2 Compassos Straight -->
@@ -816,7 +982,7 @@
         <div class="track-bar">
             <div class="track-title-group">
                 <span class="track-title">TERCINA / SWING (Ternário • 1 &amp; e)</span>
-                <span class="track-hint">3 partes/tempo</span>
+                <span class="track-hint">3 partes/tempo (1 _ e = Semínima + Colcheia)</span>
             </div>
             <div class="track-tools">
                 <select id="tripletSoundSelect" class="sound-select" aria-label="Som Tercina">
@@ -830,8 +996,8 @@
         </div>
 
         <div class="measures-banner">
-            <div class="measure-tag"><span>Compasso 1</span><span id="m1TagTriplet">4/4</span></div>
-            <div class="measure-tag"><span>Compasso 2</span><span id="m2TagTriplet">4/4</span></div>
+            <div class="measure-tag"><span id="m1LabelTriplet">Compasso 1 (1–4)</span><span id="m1TagTriplet">4/4</span></div>
+            <div class="measure-tag"><span id="m2LabelTriplet">Compasso 2 (5–8)</span><span id="m2TagTriplet">4/4</span></div>
         </div>
 
         <!-- Grade de 2 Compassos Triplets -->
@@ -843,7 +1009,39 @@
         </div>
     </section>
 
-    <!-- 5. ENTENDA O RITMO: EXEMPLOS IMEDIATOS + GUIA COMPACTO -->
+    <!-- 5. BLOCO 3 INTERCALADO: MODO MISTO (ESCOLHA ÷2 OU ÷3 EM CADA TEMPO) + PARTITURA MISTA -->
+    <section class="track-block mixed-block hidden" id="mixedBlock" aria-label="Sequenciador e Partitura Modo Misto">
+        <div class="track-bar">
+            <div class="track-title-group">
+                <span class="track-title">MISTO (÷2 ou ÷3 por Tempo)</span>
+                <span class="track-hint">Toque no topo [÷2 / ÷3] de cada tempo para mudar a subdivisão</span>
+            </div>
+            <div class="track-tools">
+                <select id="mixedSoundSelect" class="sound-select" aria-label="Som Modo Misto">
+                    <option value="tap" selected>Sapateado (Tap)</option>
+                    <option value="snare">Caixa (Snare)</option>
+                    <option value="hihat">Chimbal (Hi-Hat)</option>
+                    <option value="kick">Bumbo (Kick)</option>
+                </select>
+                <button type="button" class="mute-btn" id="mixedMuteBtn">MUTE</button>
+            </div>
+        </div>
+
+        <div class="measures-banner">
+            <div class="measure-tag"><span id="m1LabelMixed">Compasso 1 (1–4)</span><span id="m1TagMixed">4/4</span></div>
+            <div class="measure-tag"><span id="m2LabelMixed">Compasso 2 (5–8)</span><span id="m2TagMixed">4/4</span></div>
+        </div>
+
+        <!-- Grade de 2 Compassos Misto -->
+        <div class="two-measures-grid" id="mixedGrid"></div>
+
+        <!-- Partitura SVG Mista Imediatamente Abaixo -->
+        <div class="score-box">
+            <svg id="mixedScoreSvg" class="track-score-svg" viewBox="0 0 800 68" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"></svg>
+        </div>
+    </section>
+
+    <!-- 6. ENTENDA O RITMO: EXEMPLOS IMEDIATOS + GUIA COMPACTO -->
     <section class="pedagogy-bar" aria-label="Entenda o Ritmo">
         <div class="preset-header">
             <span>🎓 Entenda o Ritmo (Toque para ouvir):</span>
@@ -854,6 +1052,7 @@
             <button type="button" class="preset-btn" data-preset="straight">▶ Straight (1 e)</button>
             <button type="button" class="preset-btn" data-preset="triplet">▶ Tercina (1 &amp; e)</button>
             <button type="button" class="preset-btn swing-preset" data-preset="swing">▶ Swing (Longo-Curto)</button>
+            <button type="button" class="preset-btn mixed-preset" data-preset="mixed">▶ Exemplo Misto</button>
             <button type="button" class="preset-btn" data-preset="compare-2v3">▶ Comparar 2x3</button>
         </div>
 
@@ -865,21 +1064,24 @@
                 <strong>Tercina (1 &amp; e):</strong> Tempo dividido em 3 partes iguais.
             </div>
             <div class="concept-item c-swing">
-                <strong>Swing:</strong> Sensação de <strong>Longo e Curto</strong> na base ternária (pulso 1 longo + pulso final curto).
+                <strong>Swing (1 _ e):</strong> <strong>Longo e Curto</strong> na tercina (Semínima + Colcheia sob o 3).
+            </div>
+            <div class="concept-item c-mixed">
+                <strong>Misto (÷2 / ÷3):</strong> Combine tempos binários e ternários na mesma frase.
             </div>
         </div>
     </section>
 
-    <!-- 6. DEDICATÓRIA E CRÉDITO OBRIGATÓRIO -->
+    <!-- 7. DEDICATÓRIA E CRÉDITO OBRIGATÓRIO -->
     <footer class="footer-credit">
         <div class="footer-dedication">Dedicado à turma de sapateado da Corpo e Arte</div>
         <div class="footer-author">TAP TOK • Desenvolvido pelo <strong>Professor Glauber Santiago</strong></div>
     </footer>
 
-    <!-- 7. ACORDEON EXPLICATIVO: GUIA COMPLETO DE TEORIA RÍTMICA PARA SAPATEADORES (LEIGOS) -->
+    <!-- 8. ACORDEON EXPLICATIVO: GUIA COMPLETO DE TEORIA RÍTMICA PARA SAPATEADORES (LEIGOS) -->
     <details class="theory-accordion">
         <summary class="theory-summary">
-            <span>📚 Guia Completo: Teoria Musical e Ritmo para Sapateadores (Toque para abrir)</span>
+            <span>📖 Guia Completo de Ritmo e Partitura para Sapateadores (Para Leigos — Toque para abrir)</span>
             <span class="theory-summary-arrow">▼</span>
         </summary>
         <div class="theory-content">
@@ -893,105 +1095,98 @@
                     Toda música tem um "coração" batendo de forma constante do início ao fim. Na música, chamamos cada batida desse coração de <strong>Pulso</strong> ou <strong>Tempo</strong> (em inglês, <em>Beat</em>). É exatamente quando você bate o pé ou estala os dedos instintivamente ao ouvir uma canção.
                 </p>
                 <p>
-                    Quando você liga o botão <strong>METRÔNOMO</strong> aqui no aplicativo, aquele "clique" constante que você escuta está marcando os tempos da música.
+                    Quando você liga o botão <strong>METRÔ</strong> aqui no aplicativo, aquele "clique" constante que você escuta está marcando os tempos da música.
                 </p>
                 <div class="theory-highlight">
-                    <strong>O que é BPM?</strong> Significa <em>Batidas Por Minuto</em>. Ele mede a velocidade (o andamento) da música. Em <strong>60 BPM</strong>, temos 1 batida a cada segundo (como o ponteiro de um relógio). Em <strong>100 BPM</strong>, a caminhada é moderada; em <strong>180 BPM</strong>, seus pés precisam correr!
+                    <strong>O que é BPM?</strong> Significa <em>Batidas Por Minuto</em>. Ele mede a velocidade (o andamento) da música. Em <strong>60 BPM</strong>, temos 1 batida a cada segundo. Em <strong>100 BPM</strong>, a caminhada é moderada; em <strong>180 BPM</strong>, seus pés precisam voar!
                 </div>
             </div>
 
             <div class="theory-topic">
-                <h3>2. O que é um Compasso (4/4 e 3/4)?</h3>
+                <h3>2. Compassos (4/4 e 3/4) e a Contagem de 1 a 8 do Sapateado</h3>
                 <p>
-                    Se a música fosse apenas uma fila infinita de batidas iguais (<em>tum, tum, tum, tum...</em>), a gente se perderia facilmente na coreografia. Por isso, a música organiza os tempos dentro de pequenas "caixinhas" chamadas <strong>Compassos</strong>.
-                </p>
-                <p>
-                    Perceba que o metrônomo faz um som mais agudo (um "apito" mais forte) sempre no <strong>Tempo 1</strong>. Esse é o início da caixinha!
+                    Para ninguém se perder na música, os tempos são guardados dentro de "caixinhas" chamadas <strong>Compassos</strong>. O metrônomo sempre faz um som mais agudo no <strong>primeiro tempo de cada compasso</strong>.
                 </p>
                 <ul class="theory-list">
-                    <li><strong>Compasso 4/4:</strong> É o mais comum no Jazz, Pop, Rock e no Sapateado. Cada caixinha guarda <strong>4 tempos</strong> (contamos: <em>1, 2, 3, 4 | 1, 2, 3, 4</em>).</li>
-                    <li><strong>Compasso 3/4:</strong> É o compasso da Valsa. Cada caixinha guarda <strong>3 tempos</strong> (contamos: <em>1, 2, 3 | 1, 2, 3</em>).</li>
+                    <li><strong>Compasso 4/4:</strong> Cada compasso tem <strong>4 tempos</strong>. Como o TAP TOK mostra <strong>2 compassos lado a lado</strong>, temos 8 tempos no total.</li>
+                    <li><strong>Compasso 3/4:</strong> Cada compasso tem <strong>3 tempos</strong> (2 compassos somam 6 tempos no total).</li>
                 </ul>
-                <p>
-                    Aqui no <strong>TAP TOK</strong>, a tela mostra sempre <strong>2 compassos inteiros lado a lado</strong>, separados por uma linha branca vertical bem visível no meio.
-                </p>
-            </div>
-
-            <div class="theory-topic">
-                <h3>3. O Segredo da Subdivisão: Como "fatiar" um Tempo</h3>
-                <p>
-                    Imagine que cada tempo do metrônomo é uma pizza inteira ou um passo que você dá caminhando na rua. Se você fizer apenas <strong>um som de sapato por clique</strong> (como um <em>Step</em> ou um <em>Stamp</em> somente nos números <strong>1, 2, 3, 4</strong>), você está tocando o tempo inteiro, sem dividir.
-                </p>
-                <p>
-                    Mas no sapateado nós adoramos fazer vários sons rápidos dentro de um único clique do metrônomo (como um <em>Flap</em>, um <em>Shuffle</em> ou um <em>Riff</em>). Para que esses sons não fiquem bagunçados, precisamos <strong>fatiar o tempo em partes iguais</strong>. Isso se chama <strong>Subdivisão Rítmica</strong>! Existem duas grandes maneiras de fatiar o tempo: em <strong>2 partes</strong> ou em <strong>3 partes</strong>.
-                </p>
-            </div>
-
-            <div class="theory-topic">
-                <h3>4. Subdivisão Binária: O Ritmo "STRAIGHT" (1 e)</h3>
-                <p>
-                    A palavra <em>Straight</em> significa "reto" ou "direto". Aqui, nós pegamos cada tempo do compasso e cortamos exatamente ao meio, em <strong>2 fatias iguais</strong>:
-                </p>
-                <ul class="theory-list">
-                    <li>A primeira metade cai exatamente junto com o clique do metrônomo: chamamos pelo número do tempo (<strong>1, 2, 3, 4</strong>).</li>
-                    <li>A segunda metade fica exatamente no ar, entre um clique e outro: chamamos de <strong>"e"</strong>.</li>
-                </ul>
-                <div class="theory-highlight">
-                    <strong>Como contar falando e sapateando:</strong> Fale em voz alta de forma bem igual, como um robô ou uma marcha militar: <strong>"1 e 2 e 3 e 4 e"</strong> (ou pense na palavra <em>"CA-SA, CA-SA, CA-SA, CA-SA"</em>). Quando fazemos um <em>Shuffle</em> ou um <em>Flap</em> "reto" (binário), os dois sons da chapinha têm exatamente a mesma duração!
+                <div class="theory-highlight triplet-hl">
+                    <strong>Por que existe o botão "🔢 1–8" (ou "1–6") no topo?</strong><br>
+                    Os músicos costumam contar cada compasso separadamente: <em>1, 2, 3, 4 | 1, 2, 3, 4</em>. Já nas aulas de <strong>Sapateado e Dança</strong>, é muito comum juntarmos 2 compassos para montar frases coreográficas contando direto até 8: <strong>1, 2, 3, 4 | 5, 6, 7, 8</strong> (ou <strong>1, 2, 3 | 4, 5, 6</strong> em 3/4)! Você pode alternar entre a contagem de dança (<em>1–8</em>) e a contagem musical (<em>1–4 | 1–4</em>) a qualquer momento tocando nesse botão.
                 </div>
             </div>
 
             <div class="theory-topic">
-                <h3>5. Subdivisão Ternária: A "TERCINA" / Triplet (1 &amp; e)</h3>
+                <h3>3. Subdivisão Binária: O Ritmo "STRAIGHT" (1 e)</h3>
                 <p>
-                    E se, em vez de dividir o tempo em duas metades, nós cortarmos esse mesmo tempo em <strong>3 fatias iguaizinhas</strong>? Quando fazemos 3 sons iguais dentro do espaço de 1 único tempo, damos o nome de <strong>Tercina</strong> (em inglês, <em>Triplet</em>).
+                    Quando fazemos mais de um som de sapato dentro do mesmo clique do metrônomo (como um <em>Flap</em> ou um <em>Shuffle</em>), precisamos <strong>fatiar (subdividir) o tempo</strong>.
                 </p>
                 <p>
-                    Aqui no aplicativo, cada tempo da linha laranja possui 3 botões: <strong>1 &amp; e</strong> (depois <strong>2 &amp; e</strong>, <strong>3 &amp; e</strong>, <strong>4 &amp; e</strong>).
+                    No modo <strong>STRAIGHT</strong> (binário), cortamos cada tempo exatamente ao meio, em <strong>2 partes iguais</strong>:
+                </p>
+                <ul class="theory-list">
+                    <li>A primeira metade cai em cima do clique do metrônomo: leva o <strong>número do tempo</strong> (<em>1, 2, 3, 4, 5, 6, 7, 8</em>).</li>
+                    <li>A segunda metade fica exatamente no meio do caminho entre um clique e outro: chamamos de <strong>"e"</strong>.</li>
+                </ul>
+                <div class="theory-highlight">
+                    <strong>Como contar:</strong> Fale de forma bem regular e simétrica: <strong>"1 e 2 e 3 e 4 e | 5 e 6 e 7 e 8 e"</strong>. Os dois sons têm exatamente a mesma duração!
+                </div>
+            </div>
+
+            <div class="theory-topic">
+                <h3>4. Subdivisão Ternária: A "TERCINA" / Triplet (1 &amp; e)</h3>
+                <p>
+                    Na <strong>Tercina</strong> (em inglês, <em>Triplet</em>), pegamos 1 tempo do metrônomo e o dividimos em <strong>3 partes iguaizinhas</strong>. Por isso, cada tempo tem 3 botões: <strong>1 &amp; e</strong> (depois <strong>2 &amp; e</strong>, etc.).
                 </p>
                 <div class="theory-highlight triplet-hl">
-                    <strong>Dica de ouro para sentir a Tercina:</strong> Pense em palavras de três sílabas faladas no ritmo de cada pulso, como <em>"MÚ-SI-CA, MÚ-SI-CA"</em> ou <em>"BA-NA-NA, BA-NA-NA"</em>. No sapateado, passos de 3 sons (como <em>Shuffle-Step</em> contínuo ou <em>Riff de 3 sons</em>) encaixam como uma luva dentro da tercina!
+                    <strong>Como sentir no pé:</strong> Pense em palavras de 3 sílabas como <em>"MÚ-SI-CA, MÚ-SI-CA"</em>. Passos clássicos de 3 sons no sapateado (como <em>Shuffle-Step</em> contínuo ou <em>Riff de 3</em>) encaixam perfeitamente nas 3 células da tercina!
                 </div>
             </div>
 
             <div class="theory-topic">
-                <h3>6. Afinal, o que é o SWING? (A mágica do Longo e Curto!)</h3>
+                <h3>5. O Segredo do SWING: Longo e Curto (Semínima + Colcheia na Tercina)</h3>
                 <p>
-                    Muitas pessoas acham que <em>Swing</em> e <em>Tercina</em> são a mesma coisa, mas não são! <strong>A tercina é a régua que divide o tempo em 3; já o Swing é uma maneira especial de escolher quais partes dessa tercina nós vamos tocar.</strong>
+                    <strong>Tercina e Swing não são a mesma coisa!</strong> A tercina é a grade que divide o tempo em 3 pedacinhos (<strong>1 &amp; e</strong>). Já o <strong>Swing</strong> é uma interpretação rítmica baseada nessa grade ternária que cria a sensação de <strong>LONGO e CURTO</strong>!
                 </p>
                 <p>
-                    Olhe para os 3 pedacinhos da tercina (<strong>1 &amp; e</strong>). No <strong>Swing</strong>, nós fazemos o seguinte:
+                    Como fazemos o Swing na prática? Dentro dos 3 botões da tercina (<strong>1 &amp; e</strong>), nós ativamos apenas o <strong>primeiro (1)</strong> e o <strong>último (e)</strong>, deixando o do meio (<strong>&amp;</strong>) em silêncio: <strong>[1 _ e]</strong>.
                 </p>
-                <ul class="theory-list">
-                    <li>Tocamos o primeiro pedacinho (<strong>1</strong>) e deixamos o segundo pedacinho do meio (<strong>&amp;</strong>) em silêncio, segurando o pé. Com isso, o primeiro som dura o espaço de dois pedacinhos: ele fica <strong>LONGO</strong>!</li>
-                    <li>Depois, tocamos o último pedacinho (<strong>e</strong>) bem pertinho do próximo tempo: ele fica <strong>CURTO</strong>!</li>
-                </ul>
                 <div class="theory-highlight swing-hl">
-                    <strong>O Segredo do Balanço (Longo - Curto):</strong> Enquanto no ritmo <em>Straight</em> os dois sons são iguais (<em>TA-TA, TA-TA, TA-TA</em>), no <strong>Swing</strong> os dois sons têm tamanhos diferentes: <strong>LONGO - CURTO, LONGO - CURTO</strong> (<em>TAAA-ta, TAAA-ta, TAAA-ta</em> — igual ao bater do coração ou ao cavalgar!). Quando você faz um <em>Flap</em> ou um <em>Shuffle</em> no Jazz e espera um pouquinho mais antes do segundo som da chapinha, você está <strong>swingando</strong>!
+                    <strong>Por que na partitura do Swing aparece uma Semínima e uma Colcheia sob o "3"?</strong><br>
+                    Como você tocou no <strong>1</strong> e segurou o pé durante o <strong>&amp;</strong> do meio, esse primeiro som durou <strong>2 terços do tempo</strong> (um som <strong>LONGO</strong>, representado por uma <strong>Semínima</strong>). Já o som no <strong>e</strong> final dura apenas <strong>1 terço do tempo</strong> (um som <strong>CURTO</strong>, representado por uma <strong>Colcheia com bandeirola</strong>). Juntas debaixo do colchete <strong>3</strong>, a Semínima + Colcheia mostram visualmente o balanço <strong>LONGO–CURTO (TAAA-ta, TAAA-ta)</strong> que é a alma do Jazz e do Tap Dance!
                 </div>
             </div>
 
             <div class="theory-topic">
-                <h3>7. Como entender os desenhos da Partitura (Sem medo das bolinhas!)</h3>
+                <h3>6. O Modo MISTO: Liberdade para misturar ÷2 e ÷3 na mesma frase!</h3>
                 <p>
-                    Logo abaixo de cada fileira de botões, o <strong>TAP TOK</strong> desenha automaticamente a partitura de percussão. Você não precisa decorar nomes difíceis, basta observar a lógica visual:
+                    Em uma coreografia real de sapateado, nós não precisamos ficar presos o tempo inteiro apenas em colcheias binárias ou apenas em tercinas. Muitas vezes fazemos dois tempos em <em>Straight</em> (ex: <em>1 e 2 e</em>), depois um <em>Triplet</em> rápido no tempo 3 (<em>3 &amp; e</em>) e terminamos com um passo em <em>Swing</em>!
                 </p>
+                <div class="theory-highlight mixed-hl">
+                    <strong>Como usar o Modo MISTO:</strong> Ao tocar no botão <strong>MISTO</strong> no topo, cada tempo ganha uma chavinha própria no cabeçalho: <strong>[÷2]</strong> ou <strong>[÷3]</strong>. Toque nela para escolher se aquele tempo específico será dividido em <strong>2 partes (1 e)</strong> ou em <strong>3 partes (1 &amp; e)</strong>. A partitura logo abaixo se adapta instantaneamente misturando colcheias normais, tercinas e swing no mesmo compasso!
+                </div>
+            </div>
+
+            <div class="theory-topic">
+                <h3>7. Como ler a Partitura do TAP TOK sem mistério</h3>
                 <ul class="theory-list">
-                    <li><strong>Uma bolinha com haste sozinha (Semínima):</strong> Aparece quando você acende apenas o número do tempo (<strong>1</strong>) e deixa o resto apagado. Significa <strong>1 som longo que preenche o tempo inteiro</strong>.</li>
-                    <li><strong>Duas bolinhas unidas por uma barra grossa no topo (Colcheias):</strong> Aparecem no <em>Straight</em> quando você acende o <strong>1</strong> e o <strong>e</strong>. São <strong>2 sons iguais</strong> dividindo o tempo ao meio.</li>
-                    <li><strong>Desenhos sem bolinha (Pausas):</strong> Na música, o silêncio também é escrito! Quando você deixa o tempo todo apagado ou acende apenas a segunda metade (o <strong>e</strong>), aparece um símbolo de <strong>Pausa</strong> no lugar onde o pé fica em silêncio esperando.</li>
-                    <li><strong>O número "3" em cima das notas (Tercina):</strong> Sempre que o tempo é fatiado em 3 partes, a partitura coloca um número <strong>3</strong> (com uma barra ou um colchete) para avisar ao músico: <em>"Atenção, cabem 3 pedacinhos iguais dentro deste tempo!"</em>.</li>
-                    <li><strong>A escrita do Swing:</strong> Repare no que acontece na partitura quando você toca o <strong>Swing</strong> (botão 1 aceso, meio apagado, botão final aceso): aparece um colchete rosa com o número <strong>3</strong> contendo <strong>Nota + Pausa no meio + Nota no final</strong>. É o retrato visual perfeito do nosso <strong>Longo e Curto</strong>!</li>
+                    <li><strong>Semínima (1 bolinha com haste lisa):</strong> Aparece quando apenas a cabeça do tempo está acesa (ex: <strong>1</strong>). Preenche o tempo inteiro.</li>
+                    <li><strong>Duas Colcheias unidas por barra (no ÷2):</strong> Aparecem quando <strong>1 e</strong> estão acesos. São dois sons iguais dividindo o tempo ao meio.</li>
+                    <li><strong>Semínima + Colcheia com colchete "3" (SWING):</strong> Aparece quando você marca <strong>1 _ e</strong> na tercina. Representa o som <strong>Longo (2/3) + Curto (1/3)</strong> do Swing!</li>
+                    <li><strong>Três Colcheias unidas com "3" (Tercina cheia):</strong> Aparece quando <strong>1 &amp; e</strong> estão todos acesos (3 sons iguais no tempo).</li>
+                    <li><strong>Símbolos sem bolinha (Pausas):</strong> Mostram exatamente o pedacinho do tempo em que sua chapinha deve ficar em silêncio esperando o contratempo.</li>
                 </ul>
             </div>
 
             <div class="theory-topic">
-                <h3>8. Como estudar com o TAP TOK no seu treino de Sapateado</h3>
-                <ul class="theory-list">
-                    <li><strong>Passo 1:</strong> Toque nos botões da seção <em>"Entenda o Ritmo"</em> logo acima para escutar a diferença entre o <strong>Straight (1 e)</strong>, a <strong>Tercina (1 &amp; e)</strong> e o <strong>Swing (Longo-Curto)</strong>.</li>
-                    <li><strong>Passo 2:</strong> Tente bater palmas ou fazer <em>Flaps</em> / <em>Shuffles</em> junto com o som do aplicativo, começando devagar (ex: 75 BPM) e subindo aos poucos.</li>
-                    <li><strong>Passo 3:</strong> Crie seus próprios desafios! Apague algumas células para criar "buracos" (pausas e contratempos) e tente sapatear exatamente o que você programou!</li>
-                </ul>
+                <h3>8. Sincronia de Áudio/Bluetooth (Botão ⏱ Sync) e Dica de Estudo</h3>
+                <p>
+                    Se você estiver usando <strong>caixinhas de som ou fones Bluetooth</strong>, ou se o processador do celular demorar alguns milissegundos para enviar o som, pode parecer que a luz amarela pisca um pouquinho antes do som chegar ao seu ouvido.
+                </p>
+                <p>
+                    Para resolver isso, toque no botão <strong>⏱ Sync</strong> ao lado do BPM! Ele abre um controle deslizante de <strong>Delay Visual</strong> (em milissegundos). Se estiver no Bluetooth, experimente tocar em <strong>+120ms</strong> ou <strong>+220ms</strong> até sentir que a luz amarela pisca exatamente no instante em que você escuta a batida!
+                </p>
             </div>
         </div>
     </details>
@@ -1002,13 +1197,14 @@
  * ============================================================================
  * TAP TOK — ARQUITETURA COMPACTA E SINCRONIZADA
  * - SequencerState: Estado dos 2 compassos (8 tempos em 4/4 ou 6 em 3/4),
- *   iniciando em modo 'straight'.
+ *   iniciando em modo 'straight', com suporte a contagem 1-8, delay Bluetooth
+ *   e modo Misto (divisão por 2 ou 3 selecionável por tempo).
  * - RhythmLogic: Presets e manipulação das matrizes rítmicas.
- * - AudioEngine: Síntese Web Audio API + Agendador preciso de 6 sub-ticks/tempo.
- * - GridRenderer: Renderiza os 2 compassos inteiros na largura da tela com
- *   contagem "1 e", "2 e"... (Straight) e "1 & e", "2 & e"... (Triplets).
- * - ScoreRenderer: Desenha as duas partituras SVG individuais alinhadas tempo a tempo
- *   logo abaixo de cada sequenciador.
+ * - AudioEngine: Síntese Web Audio API + Agendador preciso de 6 sub-ticks/tempo
+ *   + compensação de latência visual (audioDelayMs).
+ * - GridRenderer: Renderiza os 2 compassos inteiros na largura da tela.
+ * - ScoreRenderer: Desenha as partituras SVG individuais alinhadas tempo a tempo
+ *   logo abaixo de cada sequenciador (com Swing [1,0,1] = Semínima + Colcheia).
  * ============================================================================
  */
 
@@ -1020,12 +1216,16 @@ const SequencerState = {
     isPlaying: false,
     loop: true,
     metronomeOn: true,
-    viewMode: 'straight',   // Padrão inicial: 'straight' ('straight' | 'triplets' | 'compare')
+    viewMode: 'straight',   // Padrão inicial: 'straight' ('straight' | 'triplets' | 'misto' | 'compare')
+    countContinuous: true,  // true = 1..8 (ou 1..6 em 3/4); false = 1..4 | 1..4
+    audioDelayMs: 0,        // Compensação visual em ms para fones Bluetooth (-150 a +500 ms)
 
     straightSound: 'snare',
     tripletSound: 'tap',
+    mixedSound: 'tap',
     straightMuted: false,
     tripletMuted: false,
+    mixedMuted: false,
 
     // 8 tempos no total (4 por compasso em 4/4)
     straight: [
@@ -1036,12 +1236,30 @@ const SequencerState = {
         [1, 0, 1], [1, 0, 1], [1, 1, 1], [1, 0, 0],
         [1, 0, 1], [1, 0, 1], [1, 1, 1], [1, 0, 0]
     ],
+    // Modo Misto: cada tempo escolhe se tem 2 ou 3 subdivisões
+    mixedDivs: [2, 2, 3, 2, 3, 3, 3, 2],
+    mixedCells: [
+        [1, 1, 0], [1, 1, 0], [1, 1, 1], [1, 0, 0],
+        [1, 0, 1], [1, 0, 1], [1, 1, 1], [1, 0, 0]
+    ],
 
     currentBeatIndex: -1,
     currentSubTick: -1,
 
     getTotalBeats() {
         return this.beatsPerMeasure * this.numMeasures;
+    },
+
+    /**
+     * Retorna o número exibido no tempo `beatIndex` conforme o modo de contagem:
+     * - Se countContinuous = true: 1..8 (em 4/4) ou 1..6 (em 3/4)
+     * - Se countContinuous = false: 1..4 | 1..4 (em 4/4) ou 1..3 | 1..3 (em 3/4)
+     */
+    getDisplayBeatNumber(beatIndex) {
+        if (this.countContinuous) {
+            return beatIndex + 1;
+        }
+        return (beatIndex % this.beatsPerMeasure) + 1;
     }
 };
 
@@ -1051,6 +1269,7 @@ const RhythmLogic = {
         for (let b = 0; b < 8; b++) {
             SequencerState.straight[b] = [0, 0];
             SequencerState.triplets[b] = [0, 0, 0];
+            SequencerState.mixedCells[b] = [0, 0, 0];
         }
     },
 
@@ -1067,9 +1286,21 @@ const RhythmLogic = {
                 SequencerState.straight[b] = Math.random() > 0.4 ? [1, 1] : [1, 0];
                 const downT = [[1, 0, 1], [1, 1, 1], [1, 0, 0]];
                 SequencerState.triplets[b] = [...downT[Math.floor(Math.random() * downT.length)]];
+                SequencerState.mixedDivs[b] = Math.random() > 0.5 ? 3 : 2;
+                SequencerState.mixedCells[b] = SequencerState.mixedDivs[b] === 2
+                    ? [1, 1, 0]
+                    : [...downT[Math.floor(Math.random() * downT.length)]];
             } else {
                 SequencerState.straight[b] = [...sPatterns[Math.floor(Math.random() * sPatterns.length)]];
                 SequencerState.triplets[b] = [...tPatterns[Math.floor(Math.random() * tPatterns.length)]];
+                const div = Math.random() > 0.5 ? 3 : 2;
+                SequencerState.mixedDivs[b] = div;
+                if (div === 2) {
+                    const sp = sPatterns[Math.floor(Math.random() * sPatterns.length)];
+                    SequencerState.mixedCells[b] = [sp[0], sp[1], 0];
+                } else {
+                    SequencerState.mixedCells[b] = [...tPatterns[Math.floor(Math.random() * tPatterns.length)]];
+                }
             }
         }
     },
@@ -1082,21 +1313,30 @@ const RhythmLogic = {
             SequencerState.viewMode = 'straight';
             for (let b = 0; b < total; b++) {
                 SequencerState.straight[b] = [1, 1];
-                SequencerState.triplets[b] = [0, 0, 0];
             }
         } else if (name === 'triplet') {
             SequencerState.viewMode = 'triplets';
             for (let b = 0; b < total; b++) {
-                SequencerState.straight[b] = [0, 0];
                 SequencerState.triplets[b] = [1, 1, 1];
             }
         } else if (name === 'swing') {
-            // Swing Longo-Curto: 1ª e 3ª subdivisões da tercina [1, 0, 1]
+            // Swing Longo-Curto: 1ª e 3ª subdivisões da tercina [1, 0, 1] -> Semínima + Colcheia
             SequencerState.viewMode = 'triplets';
             for (let b = 0; b < total; b++) {
                 const isLastBeat = (b % SequencerState.beatsPerMeasure === SequencerState.beatsPerMeasure - 1);
                 SequencerState.straight[b] = [1, 0];
                 SequencerState.triplets[b] = isLastBeat ? [1, 0, 0] : [1, 0, 1];
+            }
+        } else if (name === 'mixed') {
+            SequencerState.viewMode = 'misto';
+            const divs4 = [2, 2, 3, 2, 3, 3, 3, 2];
+            const cells4 = [
+                [1, 1, 0], [1, 1, 0], [1, 1, 1], [1, 0, 0],
+                [1, 0, 1], [1, 0, 1], [1, 1, 1], [1, 0, 0]
+            ];
+            for (let b = 0; b < total; b++) {
+                SequencerState.mixedDivs[b] = divs4[b];
+                SequencerState.mixedCells[b] = [...cells4[b]];
             }
         } else if (name === 'compare-2v3') {
             SequencerState.viewMode = 'compare';
@@ -1259,7 +1499,10 @@ const AudioEngine = {
             this.playMetronome(time, isFirstBeat);
         }
 
-        const allowStraight = (SequencerState.viewMode !== 'triplets') && !SequencerState.straightMuted;
+        const mode = SequencerState.viewMode;
+
+        // Linha Straight (ativa em 'straight' e 'compare')
+        const allowStraight = (mode === 'straight' || mode === 'compare') && !SequencerState.straightMuted;
         if (allowStraight) {
             if (subTick === 0 && SequencerState.straight[beatIndex][0] === 1) {
                 this.triggerVoice(SequencerState.straightSound, time);
@@ -1268,7 +1511,8 @@ const AudioEngine = {
             }
         }
 
-        const allowTriplets = (SequencerState.viewMode !== 'straight') && !SequencerState.tripletMuted;
+        // Linha Triplets (ativa em 'triplets' e 'compare')
+        const allowTriplets = (mode === 'triplets' || mode === 'compare') && !SequencerState.tripletMuted;
         if (allowTriplets) {
             if (subTick === 0 && SequencerState.triplets[beatIndex][0] === 1) {
                 this.triggerVoice(SequencerState.tripletSound, time);
@@ -1276,6 +1520,28 @@ const AudioEngine = {
                 this.triggerVoice(SequencerState.tripletSound, time);
             } else if (subTick === 4 && SequencerState.triplets[beatIndex][2] === 1) {
                 this.triggerVoice(SequencerState.tripletSound, time);
+            }
+        }
+
+        // Linha Mista (ativa em 'misto')
+        const allowMixed = (mode === 'misto') && !SequencerState.mixedMuted;
+        if (allowMixed) {
+            const div = SequencerState.mixedDivs[beatIndex];
+            const cells = SequencerState.mixedCells[beatIndex];
+            if (div === 2) {
+                if (subTick === 0 && cells[0] === 1) {
+                    this.triggerVoice(SequencerState.mixedSound, time);
+                } else if (subTick === 3 && cells[1] === 1) {
+                    this.triggerVoice(SequencerState.mixedSound, time);
+                }
+            } else {
+                if (subTick === 0 && cells[0] === 1) {
+                    this.triggerVoice(SequencerState.mixedSound, time);
+                } else if (subTick === 2 && cells[1] === 1) {
+                    this.triggerVoice(SequencerState.mixedSound, time);
+                } else if (subTick === 4 && cells[2] === 1) {
+                    this.triggerVoice(SequencerState.mixedSound, time);
+                }
             }
         }
 
@@ -1292,7 +1558,7 @@ const AudioEngine = {
             if (SequencerState.loop) {
                 this.currentGlobalSubTick = 0;
             } else {
-                const delayMs = Math.max(0, (this.nextSubTickTime - this.ctx.currentTime) * 1000);
+                const delayMs = Math.max(0, (this.nextSubTickTime - this.ctx.currentTime) * 1000 + SequencerState.audioDelayMs);
                 setTimeout(() => {
                     if (SequencerState.isPlaying && !SequencerState.loop) this.stop();
                 }, delayMs);
@@ -1315,7 +1581,10 @@ const AudioEngine = {
     visualSyncLoop() {
         if (!SequencerState.isPlaying) return;
         const now = this.ctx.currentTime;
-        while (this.visualQueue.length > 0 && this.visualQueue[0].time <= now + 0.01) {
+        // Compensação de Delay Visual/Bluetooth em segundos
+        const delayOffsetSec = SequencerState.audioDelayMs / 1000.0;
+
+        while (this.visualQueue.length > 0 && (this.visualQueue[0].time + delayOffsetSec) <= now + 0.008) {
             const evt = this.visualQueue.shift();
             if (
                 SequencerState.currentBeatIndex !== evt.beatIndex ||
@@ -1375,39 +1644,62 @@ const GridRenderer = {
     render() {
         const beatsPerM = SequencerState.beatsPerMeasure;
         const totalBeats = SequencerState.getTotalBeats(); // 8 ou 6
+        const mode = SequencerState.viewMode;
 
-        // Atualiza rótulos de compasso
+        // Atualiza rótulos de compasso e contagem (1-4 | 5-8 vs 1-4 | 1-4)
         const meterText = `${beatsPerM}/4`;
-        document.getElementById('m1TagStraight').textContent = meterText;
-        document.getElementById('m2TagStraight').textContent = meterText;
-        document.getElementById('m1TagTriplet').textContent = meterText;
-        document.getElementById('m2TagTriplet').textContent = meterText;
+        const m1Range = `1–${beatsPerM}`;
+        const m2Range = SequencerState.countContinuous
+            ? `${beatsPerM + 1}–${totalBeats}`
+            : `1–${beatsPerM}`;
 
-        // Visibilidade dos blocos conforme o modo
-        document.getElementById('straightBlock').classList.toggle('hidden', SequencerState.viewMode === 'triplets');
-        document.getElementById('tripletBlock').classList.toggle('hidden', SequencerState.viewMode === 'straight');
+        ['Straight', 'Triplet', 'Mixed'].forEach(suffix => {
+            document.getElementById(`m1Tag${suffix}`).textContent = meterText;
+            document.getElementById(`m2Tag${suffix}`).textContent = meterText;
+            document.getElementById(`m1Label${suffix}`).textContent = `Compasso 1 (${m1Range})`;
+            document.getElementById(`m2Label${suffix}`).textContent = `Compasso 2 (${m2Range})`;
+        });
+
+        // Atualiza texto do botão de contagem no topo
+        const countBtn = document.getElementById('countModeBtn');
+        const countTxt = document.getElementById('countModeText');
+        if (countBtn && countTxt) {
+            countBtn.classList.toggle('active', SequencerState.countContinuous);
+            countTxt.textContent = SequencerState.countContinuous
+                ? `🔢 1–${totalBeats}`
+                : `🔢 1–${beatsPerM}|1–${beatsPerM}`;
+        }
+
+        // Visibilidade dos blocos conforme o modo selecionado
+        document.getElementById('straightBlock').classList.toggle('hidden', !(mode === 'straight' || mode === 'compare'));
+        document.getElementById('tripletBlock').classList.toggle('hidden', !(mode === 'triplets' || mode === 'compare'));
+        document.getElementById('mixedBlock').classList.toggle('hidden', mode !== 'misto');
 
         const straightGrid = document.getElementById('straightGrid');
         const tripletGrid = document.getElementById('tripletGrid');
+        const mixedGrid = document.getElementById('mixedGrid');
+
         straightGrid.style.gridTemplateColumns = `repeat(${totalBeats}, minmax(0, 1fr))`;
         tripletGrid.style.gridTemplateColumns = `repeat(${totalBeats}, minmax(0, 1fr))`;
+        mixedGrid.style.gridTemplateColumns = `repeat(${totalBeats}, minmax(0, 1fr))`;
 
         straightGrid.innerHTML = '';
         tripletGrid.innerHTML = '';
+        mixedGrid.innerHTML = '';
 
         for (let b = 0; b < totalBeats; b++) {
-            const beatNumberInMeasure = (b % beatsPerM) + 1; // 1, 2, 3, (4)
-            const isBeatOne = (beatNumberInMeasure === 1);
+            const isBeatOne = ((b % beatsPerM) === 0);
             const isEndOfMeasureOne = (b === beatsPerM - 1);
+            const displayBeatNum = SequencerState.getDisplayBeatNumber(b);
 
-            // --- COLUNA DE TEMPO STRAIGHT (Rótulos: "1", "e" / "2", "e" / ...) ---
+            // --- 1. COLUNA DE TEMPO STRAIGHT (Rótulos: "1 e" .. "8 e") ---
             const sCol = document.createElement('div');
             sCol.className = `beat-col ${isBeatOne ? 'beat-one' : ''} ${isEndOfMeasureOne ? 'measure-end' : ''}`;
             sCol.dataset.beatCol = b;
 
             const sSubRow = document.createElement('div');
             sSubRow.className = 'subcells cols-2';
-            const sLabels = [`${beatNumberInMeasure}`, 'e'];
+            const sLabels = [`${displayBeatNum}`, 'e'];
 
             for (let sub = 0; sub < 2; sub++) {
                 const btn = document.createElement('button');
@@ -1424,19 +1716,27 @@ const GridRenderer = {
             sCol.appendChild(sSubRow);
             straightGrid.appendChild(sCol);
 
-            // --- COLUNA DE TEMPO TRIPLETS (Rótulos: "1", "&", "e" / "2", "&", "e" / ...) ---
+            // --- 2. COLUNA DE TEMPO TRIPLETS (Rótulos: "1 & e" .. "8 & e") ---
             const tCol = document.createElement('div');
             tCol.className = `beat-col ${isBeatOne ? 'beat-one' : ''} ${isEndOfMeasureOne ? 'measure-end' : ''}`;
             tCol.dataset.beatCol = b;
 
+            const tCells = SequencerState.triplets[b];
+            if (tCells[0] === 1 && tCells[1] === 0 && tCells[2] === 1) {
+                const badge = document.createElement('span');
+                badge.className = 'swing-badge';
+                badge.textContent = 'SWING';
+                tCol.appendChild(badge);
+            }
+
             const tSubRow = document.createElement('div');
             tSubRow.className = 'subcells cols-3';
-            const tLabels = [`${beatNumberInMeasure}`, '&', 'e'];
+            const tLabels = [`${displayBeatNum}`, '&', 'e'];
 
             for (let sub = 0; sub < 3; sub++) {
                 const btn = document.createElement('button');
                 btn.type = 'button';
-                const isActive = SequencerState.triplets[b][sub] === 1;
+                const isActive = tCells[sub] === 1;
                 btn.className = `seq-cell triplet-cell ${sub === 0 ? 'head-cell' : ''} ${isActive ? 'active' : ''}`;
                 btn.dataset.track = 'triplets';
                 btn.dataset.beat = b;
@@ -1447,23 +1747,56 @@ const GridRenderer = {
             }
             tCol.appendChild(tSubRow);
             tripletGrid.appendChild(tCol);
-        }
-    },
 
-    updateCellButton(track, beatIndex, subIndex) {
-        const isActive = track === 'straight'
-            ? SequencerState.straight[beatIndex][subIndex] === 1
-            : SequencerState.triplets[beatIndex][subIndex] === 1;
-        const btn = document.querySelector(
-            `.seq-cell[data-track="${track}"][data-beat="${beatIndex}"][data-sub="${subIndex}"]`
-        );
-        if (btn) btn.classList.toggle('active', isActive);
+            // --- 3. COLUNA DE TEMPO MODO MISTO (Cabeçalho clicável ÷2 / ÷3 + células) ---
+            const mCol = document.createElement('div');
+            mCol.className = `beat-col ${isBeatOne ? 'beat-one' : ''} ${isEndOfMeasureOne ? 'measure-end' : ''}`;
+            mCol.dataset.beatCol = b;
+
+            const mDiv = SequencerState.mixedDivs[b];
+            const mCells = SequencerState.mixedCells[b];
+
+            if (mDiv === 3 && mCells[0] === 1 && mCells[1] === 0 && mCells[2] === 1) {
+                const badge = document.createElement('span');
+                badge.className = 'swing-badge';
+                badge.textContent = 'SWING';
+                mCol.appendChild(badge);
+            }
+
+            const divToggleBtn = document.createElement('button');
+            divToggleBtn.type = 'button';
+            divToggleBtn.className = `beat-div-toggle ${mDiv === 2 ? 'is-div2' : 'is-div3'}`;
+            divToggleBtn.title = 'Toque para alternar este tempo entre divisão por 2 (Straight) e por 3 (Tercina/Swing)';
+            divToggleBtn.textContent = mDiv === 2 ? '÷2' : '÷3';
+            divToggleBtn.addEventListener('click', () => UIController.onMixedDivToggle(b));
+            mCol.appendChild(divToggleBtn);
+
+            const mSubRow = document.createElement('div');
+            mSubRow.className = `subcells ${mDiv === 2 ? 'cols-2' : 'cols-3'}`;
+            const mLabels = mDiv === 2 ? [`${displayBeatNum}`, 'e'] : [`${displayBeatNum}`, '&', 'e'];
+
+            for (let sub = 0; sub < mDiv; sub++) {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                const isActive = mCells[sub] === 1;
+                const cellTypeClass = mDiv === 2 ? 'straight-cell' : 'triplet-cell';
+                btn.className = `seq-cell ${cellTypeClass} ${sub === 0 ? 'head-cell' : ''} ${isActive ? 'active' : ''}`;
+                btn.dataset.track = 'mixed';
+                btn.dataset.beat = b;
+                btn.dataset.sub = sub;
+                btn.textContent = mLabels[sub];
+                btn.addEventListener('click', () => UIController.onCellClick('mixed', b, sub));
+                mSubRow.appendChild(btn);
+            }
+            mCol.appendChild(mSubRow);
+            mixedGrid.appendChild(mCol);
+        }
     },
 
     highlightPlayhead(beatIndex, subTick) {
         this.clearPlayhead();
 
-        // Destaca a coluna do tempo atual nas duas grades
+        // Destaca a coluna do tempo atual em todas as grades visíveis
         document.querySelectorAll(`[data-beat-col="${beatIndex}"]`).forEach(el => {
             el.classList.add('playing-beat');
         });
@@ -1487,10 +1820,16 @@ const GridRenderer = {
         const tBtn = document.querySelector(`.seq-cell[data-track="triplets"][data-beat="${beatIndex}"][data-sub="${tSub}"]`);
         if (tBtn) tBtn.classList.add('playhead-active');
 
+        // Sub-célula Misto
+        const mDiv = SequencerState.mixedDivs[beatIndex];
+        const mSub = mDiv === 2 ? sSub : tSub;
+        const mBtn = document.querySelector(`.seq-cell[data-track="mixed"][data-beat="${beatIndex}"][data-sub="${mSub}"]`);
+        if (mBtn) mBtn.classList.add('playhead-active');
+
         const mNum = Math.floor(beatIndex / SequencerState.beatsPerMeasure) + 1;
-        const bNum = (beatIndex % SequencerState.beatsPerMeasure) + 1;
+        const dispNum = SequencerState.getDisplayBeatNumber(beatIndex);
         const ind = document.getElementById('statusIndicator');
-        if (ind) ind.textContent = `C${mNum} • Tempo ${bNum}`;
+        if (ind) ind.textContent = `C${mNum} • Tempo ${dispNum}`;
     },
 
     clearPlayhead() {
@@ -1499,11 +1838,12 @@ const GridRenderer = {
     }
 };
 
-/* 5. RENDERIZADOR DAS DUAS PARTITURAS INTERCALADAS (SVG ALINHADO AOS TEMPOS) */
+/* 5. RENDERIZADOR DAS PARTITURAS INTERCALADAS (SVG ALINHADO AOS TEMPOS) */
 const ScoreRenderer = {
     render() {
         this.renderStraightScore();
         this.renderTripletScore();
+        this.renderMixedScore();
         if (SequencerState.currentBeatIndex >= 0) {
             this.highlightBeat(SequencerState.currentBeatIndex);
         }
@@ -1525,7 +1865,6 @@ const ScoreRenderer = {
 
         let out = '';
 
-        // Fundo de cada tempo e divisórias de tempo/compasso
         for (let b = 0; b < totalBeats; b++) {
             const x = b * beatW;
             const isBeatOne = (b % beatsPerM === 0);
@@ -1538,20 +1877,16 @@ const ScoreRenderer = {
             }
         }
 
-        // Linha única da pauta de percussão
         out += `<line x1="4" y1="${staffY}" x2="${width - 4}" y2="${staffY}" stroke="#475569" stroke-width="1.8" />`;
 
-        // Barra central forte entre Compasso 1 e Compasso 2
         const midX = width / 2;
         out += `<line x1="${midX}" y1="10" x2="${midX}" y2="${height - 6}" stroke="#f8fafc" stroke-width="2.5" />`;
 
-        // Barra dupla final
         out += `
             <line x1="${width - 6}" y1="12" x2="${width - 6}" y2="${height - 8}" stroke="#cbd5e1" stroke-width="1.5" />
             <line x1="${width - 2}" y1="12" x2="${width - 2}" y2="${height - 8}" stroke="#cbd5e1" stroke-width="3" />
         `;
 
-        // Figuras musicais em cada tempo
         for (let b = 0; b < totalBeats; b++) {
             const beatX = b * beatW;
             out += this.drawStraightBeat(beatX, beatW, staffY, SequencerState.straight[b]);
@@ -1588,14 +1923,11 @@ const ScoreRenderer = {
             }
         }
 
-        // Linha da pauta
         out += `<line x1="4" y1="${staffY}" x2="${width - 4}" y2="${staffY}" stroke="#475569" stroke-width="1.8" />`;
 
-        // Barra divisória entre Compasso 1 e Compasso 2
         const midX = width / 2;
         out += `<line x1="${midX}" y1="10" x2="${midX}" y2="${height - 6}" stroke="#f8fafc" stroke-width="2.5" />`;
 
-        // Barra dupla final
         out += `
             <line x1="${width - 6}" y1="12" x2="${width - 6}" y2="${height - 8}" stroke="#cbd5e1" stroke-width="1.5" />
             <line x1="${width - 2}" y1="12" x2="${width - 2}" y2="${height - 8}" stroke="#cbd5e1" stroke-width="3" />
@@ -1604,6 +1936,58 @@ const ScoreRenderer = {
         for (let b = 0; b < totalBeats; b++) {
             const beatX = b * beatW;
             out += this.drawTripletBeat(beatX, beatW, staffY, SequencerState.triplets[b]);
+        }
+
+        svg.innerHTML = out;
+    },
+
+    /**
+     * Desenha a partitura SVG da linha Mista (combina tempos ÷2 e ÷3 lado a lado)
+     */
+    renderMixedScore() {
+        const svg = document.getElementById('mixedScoreSvg');
+        if (!svg) return;
+
+        const beatsPerM = SequencerState.beatsPerMeasure;
+        const totalBeats = SequencerState.getTotalBeats();
+        const width = 800;
+        const height = 68;
+        const staffY = 46;
+        const beatW = width / totalBeats;
+
+        let out = '';
+
+        for (let b = 0; b < totalBeats; b++) {
+            const x = b * beatW;
+            const isBeatOne = (b % beatsPerM === 0);
+            out += `
+                <rect id="m-score-hl-${b}" x="${x + 1}" y="2" width="${beatW - 2}" height="${height - 4}"
+                      rx="3" fill="${isBeatOne ? 'rgba(253,224,71,0.03)' : 'transparent'}" />
+            `;
+            if (b > 0 && b !== beatsPerM) {
+                out += `<line x1="${x}" y1="8" x2="${x}" y2="${height - 6}" stroke="#162032" stroke-width="1" stroke-dasharray="2,2" />`;
+            }
+        }
+
+        out += `<line x1="4" y1="${staffY}" x2="${width - 4}" y2="${staffY}" stroke="#475569" stroke-width="1.8" />`;
+
+        const midX = width / 2;
+        out += `<line x1="${midX}" y1="10" x2="${midX}" y2="${height - 6}" stroke="#f8fafc" stroke-width="2.5" />`;
+
+        out += `
+            <line x1="${width - 6}" y1="12" x2="${width - 6}" y2="${height - 8}" stroke="#cbd5e1" stroke-width="1.5" />
+            <line x1="${width - 2}" y1="12" x2="${width - 2}" y2="${height - 8}" stroke="#cbd5e1" stroke-width="3" />
+        `;
+
+        for (let b = 0; b < totalBeats; b++) {
+            const beatX = b * beatW;
+            const div = SequencerState.mixedDivs[b];
+            const cells = SequencerState.mixedCells[b];
+            if (div === 2) {
+                out += this.drawStraightBeat(beatX, beatW, staffY, [cells[0], cells[1]]);
+            } else {
+                out += this.drawTripletBeat(beatX, beatW, staffY, cells);
+            }
         }
 
         svg.innerHTML = out;
@@ -1668,6 +2052,7 @@ const ScoreRenderer = {
 
     drawTripletBeat(beatX, beatW, staffY, cells) {
         const c = '#f59e0b';
+        const swingColor = '#f472b6';
         const key = `${cells[0]}${cells[1]}${cells[2]}`;
         const x1 = beatX + beatW * 0.20;
         const x2 = beatX + beatW * 0.50;
@@ -1695,12 +2080,13 @@ const ScoreRenderer = {
                 ${this.drawEighthRest(x3, staffY)}
                 ${this.drawBracket3(x1 - 4, x3 + 5, brkY)}
             `;
-            case '101': return `
-                ${this.drawNote(x1, staffY, c, true)}
-                ${this.drawEighthRest(x2, staffY)}
-                ${this.drawNote(x3, staffY, c, true)}
-                ${this.drawBracket3(x1 - 4, x3 + 7, brkY, '#f472b6')}
-            `;
+            case '101':
+                // SWING (1 _ e): Semínima (Longa, sem bandeirola) + Colcheia (Curta, com bandeirola) sob o colchete 3
+                return `
+                    ${this.drawNote(x1, staffY, swingColor, false)}
+                    ${this.drawNote(x3, staffY, swingColor, true)}
+                    ${this.drawBracket3(x1 - 4, x3 + 8, brkY, swingColor)}
+                `;
             case '011': return `
                 ${this.drawEighthRest(x1, staffY)}
                 ${this.drawNote(x2, staffY, c, false)}
@@ -1736,6 +2122,9 @@ const ScoreRenderer = {
 
             const tRect = document.getElementById(`t-score-hl-${b}`);
             if (tRect) tRect.setAttribute('fill', b === beatIndex ? activeFill : defaultFill);
+
+            const mRect = document.getElementById(`m-score-hl-${b}`);
+            if (mRect) mRect.setAttribute('fill', b === beatIndex ? activeFill : defaultFill);
         }
     }
 };
@@ -1756,17 +2145,42 @@ const UIController = {
             if (next === 1 && !SequencerState.straightMuted) {
                 AudioEngine.triggerVoice(SequencerState.straightSound);
             }
-            GridRenderer.updateCellButton('straight', beatIndex, subIndex);
+            GridRenderer.render();
             ScoreRenderer.renderStraightScore();
-        } else {
+        } else if (track === 'triplets') {
             const next = SequencerState.triplets[beatIndex][subIndex] ? 0 : 1;
             SequencerState.triplets[beatIndex][subIndex] = next;
             if (next === 1 && !SequencerState.tripletMuted) {
                 AudioEngine.triggerVoice(SequencerState.tripletSound);
             }
-            GridRenderer.updateCellButton('triplets', beatIndex, subIndex);
+            GridRenderer.render();
             ScoreRenderer.renderTripletScore();
+        } else if (track === 'mixed') {
+            const next = SequencerState.mixedCells[beatIndex][subIndex] ? 0 : 1;
+            SequencerState.mixedCells[beatIndex][subIndex] = next;
+            if (next === 1 && !SequencerState.mixedMuted) {
+                AudioEngine.triggerVoice(SequencerState.mixedSound);
+            }
+            GridRenderer.render();
+            ScoreRenderer.renderMixedScore();
         }
+        if (SequencerState.currentBeatIndex >= 0) {
+            ScoreRenderer.highlightBeat(SequencerState.currentBeatIndex);
+        }
+    },
+
+    onMixedDivToggle(beatIndex) {
+        const currentDiv = SequencerState.mixedDivs[beatIndex];
+        const nextDiv = currentDiv === 2 ? 3 : 2;
+        SequencerState.mixedDivs[beatIndex] = nextDiv;
+        if (nextDiv === 3) {
+            // Inicia em Swing [1, 0, 1] ao mudar para tercina para facilitar experimentação
+            SequencerState.mixedCells[beatIndex] = [1, 0, 1];
+        } else {
+            SequencerState.mixedCells[beatIndex] = [1, 1, 0];
+        }
+        GridRenderer.render();
+        ScoreRenderer.renderMixedScore();
         if (SequencerState.currentBeatIndex >= 0) {
             ScoreRenderer.highlightBeat(SequencerState.currentBeatIndex);
         }
@@ -1796,6 +2210,13 @@ const UIController = {
             });
         });
 
+        // Alternar Contagem de Sapateado (1-8 / 1-6 vs 1-4 | 1-4)
+        const countModeBtn = document.getElementById('countModeBtn');
+        countModeBtn.addEventListener('click', () => {
+            SequencerState.countContinuous = !SequencerState.countContinuous;
+            GridRenderer.render();
+        });
+
         // BPM
         const slider = document.getElementById('bpmSlider');
         const display = document.getElementById('bpmValueDisplay');
@@ -1808,6 +2229,35 @@ const UIController = {
         slider.addEventListener('input', (e) => updateBpm(e.target.value));
         document.getElementById('bpmMinusBtn').addEventListener('click', () => updateBpm(SequencerState.bpm - 5));
         document.getElementById('bpmPlusBtn').addEventListener('click', () => updateBpm(SequencerState.bpm + 5));
+
+        // Gaveta de Sincronia / Delay Bluetooth
+        const syncBtn = document.getElementById('syncDrawerBtn');
+        const syncDrawer = document.getElementById('syncDrawer');
+        const delaySlider = document.getElementById('delaySlider');
+        const delayDisplay = document.getElementById('delayValueDisplay');
+        const syncBtnText = document.getElementById('syncBtnText');
+
+        const updateDelay = (val) => {
+            const ms = Math.max(-150, Math.min(500, parseInt(val, 10) || 0));
+            SequencerState.audioDelayMs = ms;
+            delaySlider.value = ms;
+            const sign = ms > 0 ? '+' : '';
+            delayDisplay.textContent = `${sign}${ms} ms`;
+            syncBtnText.textContent = ms === 0 ? '⏱ Sync' : `⏱ ${sign}${ms}ms`;
+            document.querySelectorAll('.sync-preset-btn').forEach(b => {
+                b.classList.toggle('active', parseInt(b.dataset.delay, 10) === ms);
+            });
+        };
+
+        syncBtn.addEventListener('click', () => {
+            const isHidden = syncDrawer.classList.toggle('hidden');
+            syncBtn.classList.toggle('active', !isHidden || SequencerState.audioDelayMs !== 0);
+        });
+
+        delaySlider.addEventListener('input', (e) => updateDelay(e.target.value));
+        document.querySelectorAll('.sync-preset-btn').forEach(btn => {
+            btn.addEventListener('click', () => updateDelay(btn.dataset.delay));
+        });
 
         // Metrônomo
         const metroBtn = document.getElementById('metroToggleBtn');
@@ -1848,6 +2298,10 @@ const UIController = {
             SequencerState.tripletSound = e.target.value;
             AudioEngine.triggerVoice(SequencerState.tripletSound);
         });
+        document.getElementById('mixedSoundSelect').addEventListener('change', (e) => {
+            SequencerState.mixedSound = e.target.value;
+            AudioEngine.triggerVoice(SequencerState.mixedSound);
+        });
 
         const sMute = document.getElementById('straightMuteBtn');
         sMute.addEventListener('click', () => {
@@ -1859,6 +2313,12 @@ const UIController = {
         tMute.addEventListener('click', () => {
             SequencerState.tripletMuted = !SequencerState.tripletMuted;
             tMute.classList.toggle('muted', SequencerState.tripletMuted);
+        });
+
+        const mMute = document.getElementById('mixedMuteBtn');
+        mMute.addEventListener('click', () => {
+            SequencerState.mixedMuted = !SequencerState.mixedMuted;
+            mMute.classList.toggle('muted', SequencerState.mixedMuted);
         });
 
         // Presets Pedagógicos
