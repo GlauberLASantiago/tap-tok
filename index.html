@@ -1,0 +1,1901 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>TAP TOK — Laboratório de Ritmo | Prof. Glauber Santiago</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23090d16' stroke='%2338bdf8' stroke-width='4'/%3E%3Ccircle cx='20' cy='46' r='8' fill='%2338bdf8'/%3E%3Ccircle cx='44' cy='42' r='8' fill='%23f59e0b'/%3E%3Cpath d='M26 46V16L50 12V42' stroke='%23f8fafc' stroke-width='4' stroke-linecap='round' fill='none'/%3E%3C/svg%3E">
+    <style>
+        /* ==========================================================================
+           DESIGN ULTRA-COMPACTO MOBILE-FIRST (SEM ROLAGEM HORIZONTAL)
+           ========================================================================== */
+        :root {
+            --bg-main: #070b12;
+            --bg-panel: #111827;
+            --bg-card: #1e293b;
+            --bg-cell: #0f172a;
+            --border-color: #2e3d52;
+            --measure-divider: #f8fafc;
+
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --text-dim: #64748b;
+
+            --straight-color: #38bdf8;
+            --straight-bg: rgba(56, 189, 248, 0.14);
+            --triplet-color: #f59e0b;
+            --triplet-bg: rgba(245, 158, 11, 0.14);
+
+            --swing-color: #ec4899;
+            --accent-green: #10b981;
+            --accent-red: #ef4444;
+            --playhead: #fde047;
+
+            --font-sans: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            --font-mono: 'SFMono-Regular', Consolas, monospace;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html, body {
+            width: 100%;
+            overflow-x: hidden;
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            font-family: var(--font-sans);
+            font-size: 12px;
+            line-height: 1.25;
+        }
+
+        .app-shell {
+            max-width: 780px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 4px;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        /* 1. BARRA DE TOPO ULTRA-FINA */
+        .top-bar {
+            background: var(--bg-panel);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 4px 7px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 4px;
+        }
+
+        .brand {
+            display: flex;
+            align-items: baseline;
+            gap: 5px;
+            white-space: nowrap;
+        }
+
+        .brand-title {
+            font-size: 1.02rem;
+            font-weight: 900;
+            letter-spacing: 0.04em;
+            background: linear-gradient(90deg, #38bdf8, #f8fafc, #f59e0b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .brand-sub {
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            display: none;
+        }
+
+        @media (min-width: 480px) {
+            .brand-sub { display: inline; }
+        }
+
+        /* Botões Segmentados Compactos */
+        .seg-group {
+            display: inline-flex;
+            background: #05080f;
+            padding: 2px;
+            border-radius: 5px;
+            border: 1px solid #1e293b;
+            gap: 2px;
+        }
+
+        .seg-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            font-size: 0.66rem;
+            font-weight: 800;
+            padding: 3px 6px;
+            border-radius: 3px;
+            cursor: pointer;
+            line-height: 1;
+        }
+
+        .seg-btn.active {
+            background: var(--bg-card);
+            color: #fff;
+        }
+
+        .seg-btn[data-view="straight"].active {
+            background: var(--straight-color);
+            color: #04131f;
+        }
+
+        .seg-btn[data-view="triplets"].active {
+            background: var(--triplet-color);
+            color: #1f1103;
+        }
+
+        .seg-btn[data-view="compare"].active {
+            background: linear-gradient(135deg, var(--straight-color), var(--triplet-color));
+            color: #05080f;
+        }
+
+        /* 2. BARRA UNIFICADA DE CONTROLES E TRANSPORTE */
+        .control-strip {
+            background: var(--bg-panel);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 4px 6px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .control-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 4px;
+            flex-wrap: nowrap;
+        }
+
+        .ctrl-btn {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            border-radius: 4px;
+            padding: 4px 6px;
+            font-size: 0.68rem;
+            font-weight: 800;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 3px;
+            white-space: nowrap;
+            height: 25px;
+        }
+
+        .ctrl-btn:active {
+            transform: scale(0.97);
+        }
+
+        .btn-play {
+            background: var(--accent-green);
+            border-color: #34d399;
+            color: #032219;
+            flex: 1.2;
+        }
+
+        .btn-play.playing {
+            background: var(--triplet-color);
+            border-color: #fde047;
+            color: #1f1002;
+        }
+
+        .btn-stop { flex: 0.8; }
+
+        .btn-loop.active {
+            border-color: var(--straight-color);
+            background: var(--straight-bg);
+            color: var(--straight-color);
+        }
+
+        .btn-metro.active {
+            border-color: var(--accent-green);
+            background: rgba(16, 185, 129, 0.15);
+            color: #6ee7b7;
+        }
+
+        .metro-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #475569;
+        }
+
+        .btn-metro.active .metro-dot {
+            background: var(--accent-green);
+        }
+
+        .metro-dot.pulse {
+            background: var(--playhead) !important;
+            box-shadow: 0 0 6px var(--playhead);
+            transform: scale(1.4);
+        }
+
+        /* Controle de BPM enxuto */
+        .bpm-box {
+            display: inline-flex;
+            align-items: center;
+            background: #05080f;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            padding: 1px 3px;
+            gap: 3px;
+            height: 25px;
+        }
+
+        .bpm-step {
+            background: var(--bg-card);
+            border: none;
+            color: var(--text-main);
+            width: 19px;
+            height: 19px;
+            border-radius: 3px;
+            font-weight: 900;
+            font-size: 0.78rem;
+            cursor: pointer;
+            line-height: 1;
+        }
+
+        .bpm-val {
+            font-family: var(--font-mono);
+            font-size: 0.72rem;
+            font-weight: 800;
+            color: var(--playhead);
+            min-width: 44px;
+            text-align: center;
+        }
+
+        .bpm-slider {
+            width: 55px;
+            height: 4px;
+            accent-color: var(--straight-color);
+        }
+
+        @media (max-width: 390px) {
+            .bpm-slider { display: none; }
+        }
+
+        /* 3. BLOCOS INTERCALADOS (SEQUENCIADOR + PARTITURA ABAIXO) */
+        .track-block {
+            background: var(--bg-panel);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 4px;
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+
+        .track-block.straight-block {
+            border-left: 3px solid var(--straight-color);
+        }
+
+        .track-block.triplet-block {
+            border-left: 3px solid var(--triplet-color);
+        }
+
+        .track-block.hidden {
+            display: none;
+        }
+
+        /* Cabeçalho da Pista */
+        .track-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 4px;
+            padding: 0 2px;
+        }
+
+        .track-title-group {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            min-width: 0;
+        }
+
+        .track-title {
+            font-size: 0.72rem;
+            font-weight: 900;
+            letter-spacing: 0.02em;
+            white-space: nowrap;
+        }
+
+        .straight-block .track-title { color: var(--straight-color); }
+        .triplet-block .track-title { color: var(--triplet-color); }
+
+        .track-hint {
+            font-size: 0.62rem;
+            color: var(--text-muted);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .track-tools {
+            display: flex;
+            align-items: center;
+            gap: 3px;
+            flex-shrink: 0;
+        }
+
+        .sound-select {
+            background: #05080f;
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
+            border-radius: 3px;
+            font-size: 0.64rem;
+            font-weight: 700;
+            padding: 2px 4px;
+            height: 20px;
+        }
+
+        .mute-btn {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            color: var(--text-muted);
+            border-radius: 3px;
+            font-size: 0.6rem;
+            font-weight: 800;
+            padding: 2px 5px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .mute-btn.muted {
+            background: rgba(239, 68, 68, 0.25);
+            border-color: var(--accent-red);
+            color: #fca5a5;
+        }
+
+        /* Barra fininha de identificação dos 2 Compassos */
+        .measures-banner {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0;
+            background: #060911;
+            border: 1px solid #1e293b;
+            border-radius: 3px;
+            font-size: 0.58rem;
+            font-weight: 800;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        .measure-tag {
+            padding: 1px 5px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .measure-tag:first-child {
+            border-right: 2px solid var(--measure-divider);
+        }
+
+        /* GRADE DE 2 COMPASSOS LADO A LADO (8 COLUNAS EM 4/4 OU 6 EM 3/4) */
+        .two-measures-grid {
+            display: grid;
+            width: 100%;
+            gap: 2px;
+            align-items: stretch;
+        }
+
+        /* Tempo individual dentro dos 2 compassos */
+        .beat-col {
+            background: #070b12;
+            border: 1px solid #1f2b3d;
+            border-radius: 3px;
+            padding: 1px;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            min-width: 0;
+        }
+
+        /* Destaque do Tempo 1 de cada compasso */
+        .beat-col.beat-one {
+            border-color: rgba(253, 224, 71, 0.35);
+        }
+
+        /* Divisória clara entre Compasso 1 e Compasso 2 */
+        .beat-col.measure-end {
+            margin-right: 2px;
+            box-shadow: 2px 0 0 0 var(--measure-divider);
+        }
+
+        .beat-col.playing-beat {
+            border-color: var(--playhead);
+            background: rgba(253, 224, 71, 0.08);
+        }
+
+        /* Sub-grid de células dentro de cada tempo */
+        .subcells {
+            display: grid;
+            gap: 1px;
+            width: 100%;
+            height: 34px;
+        }
+
+        .subcells.cols-2 {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .subcells.cols-3 {
+            grid-template-columns: repeat(3, 1fr);
+        }
+
+        /* Botão de célula ultra-compacto com sílaba */
+        .seq-cell {
+            background: var(--bg-cell);
+            border: 1px solid #28364d;
+            border-radius: 2px;
+            color: var(--text-muted);
+            font-family: var(--font-mono);
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            padding: 0;
+            min-width: 0;
+            line-height: 1;
+            transition: background 0.08s;
+        }
+
+        /* Ajuste tipográfico cirúrgico para caber 24 células (Triplets 4/4) em 350px */
+        .cols-2 .seq-cell {
+            font-size: 0.74rem;
+        }
+
+        .cols-3 .seq-cell {
+            font-size: 0.65rem;
+            letter-spacing: -0.03em;
+        }
+
+        /* 1ª célula do tempo tem peso visual de cabeça de tempo */
+        .seq-cell.head-cell {
+            color: #e2e8f0;
+            background: #141e30;
+        }
+
+        .seq-cell.straight-cell.active {
+            background: linear-gradient(180deg, #38bdf8, #0284c7);
+            border-color: #e0f2fe;
+            color: #03111c;
+        }
+
+        .seq-cell.triplet-cell.active {
+            background: linear-gradient(180deg, #f59e0b, #d97706);
+            border-color: #fef3c7;
+            color: #1c0f02;
+        }
+
+        .seq-cell.playhead-active {
+            outline: 1.5px solid var(--playhead);
+            outline-offset: -1px;
+            filter: brightness(1.25);
+            z-index: 2;
+        }
+
+        /* PARTITURA SVG COMPACTA LOGO ABAIXO DE CADA GRADE */
+        .score-box {
+            width: 100%;
+            background: #060a12;
+            border: 1px solid #1e293b;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .track-score-svg {
+            width: 100%;
+            height: 54px;
+            display: block;
+        }
+
+        /* 4. SEÇÃO COMPACTA DE PRESETS E "ENTENDA O RITMO" */
+        .pedagogy-bar {
+            background: var(--bg-panel);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 5px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .preset-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 0.65rem;
+            font-weight: 800;
+            color: var(--text-muted);
+            text-transform: uppercase;
+        }
+
+        .presets-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 3px;
+        }
+
+        @media (max-width: 420px) {
+            .presets-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        .preset-btn {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            border-radius: 4px;
+            padding: 4px 3px;
+            font-size: 0.63rem;
+            font-weight: 800;
+            cursor: pointer;
+            text-align: center;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .preset-btn:hover, .preset-btn:active {
+            border-color: var(--playhead);
+            background: #263449;
+        }
+
+        .preset-btn.swing-preset {
+            border-color: rgba(236, 72, 153, 0.5);
+            color: #fbcfe8;
+        }
+
+        /* Resumo Conceitual Enxuto */
+        .concept-summary {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 4px;
+            font-size: 0.62rem;
+            color: var(--text-muted);
+            background: #070b12;
+            padding: 4px;
+            border-radius: 4px;
+            border: 1px solid #1a2436;
+        }
+
+        @media (max-width: 480px) {
+            .concept-summary {
+                grid-template-columns: 1fr;
+                gap: 2px;
+            }
+        }
+
+        .concept-item strong {
+            color: var(--text-main);
+        }
+
+        .c-straight strong { color: var(--straight-color); }
+        .c-triplet strong  { color: var(--triplet-color); }
+        .c-swing strong    { color: #f472b6; }
+
+        /* 5. RODAPÉ COM DEDICATÓRIA E CRÉDITOS */
+        .footer-credit {
+            text-align: center;
+            font-size: 0.64rem;
+            color: var(--text-dim);
+            padding: 3px 0 2px;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .footer-dedication {
+            color: #cbd5e1;
+            font-weight: 700;
+            letter-spacing: 0.01em;
+        }
+
+        .footer-author strong {
+            color: var(--text-muted);
+        }
+
+        /* 6. ACORDEON DE TEXTO EXPLICATIVO PARA LEIGOS (ABAIXO DOS CRÉDITOS) */
+        .theory-accordion {
+            background: var(--bg-panel);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            overflow: hidden;
+            margin-bottom: 12px;
+        }
+
+        .theory-summary {
+            list-style: none;
+            cursor: pointer;
+            padding: 7px 10px;
+            font-size: 0.72rem;
+            font-weight: 800;
+            color: var(--text-main);
+            background: linear-gradient(90deg, rgba(56, 189, 248, 0.12), rgba(245, 158, 11, 0.12));
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 6px;
+        }
+
+        .theory-summary::-webkit-details-marker {
+            display: none;
+        }
+
+        .theory-summary-arrow {
+            font-size: 0.68rem;
+            color: var(--playhead);
+            transition: transform 0.2s ease;
+        }
+
+        .theory-accordion[open] .theory-summary-arrow {
+            transform: rotate(180deg);
+        }
+
+        .theory-accordion[open] .theory-summary {
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .theory-content {
+            padding: 10px 11px;
+            font-size: 0.76rem;
+            line-height: 1.55;
+            color: #cbd5e1;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            user-select: text;
+        }
+
+        .theory-topic {
+            background: #080d17;
+            border: 1px solid #1e293b;
+            border-radius: 5px;
+            padding: 8px 9px;
+        }
+
+        .theory-topic h3 {
+            font-size: 0.8rem;
+            font-weight: 900;
+            color: var(--playhead);
+            margin-bottom: 4px;
+        }
+
+        .theory-topic p {
+            margin-bottom: 6px;
+        }
+
+        .theory-topic p:last-child {
+            margin-bottom: 0;
+        }
+
+        .theory-highlight {
+            background: rgba(56, 189, 248, 0.08);
+            border-left: 3px solid var(--straight-color);
+            padding: 5px 7px;
+            border-radius: 0 4px 4px 0;
+            margin-top: 4px;
+            font-size: 0.72rem;
+            color: #e2e8f0;
+        }
+
+        .theory-highlight.triplet-hl {
+            background: rgba(245, 158, 11, 0.08);
+            border-left-color: var(--triplet-color);
+        }
+
+        .theory-highlight.swing-hl {
+            background: rgba(236, 72, 153, 0.1);
+            border-left-color: var(--swing-color);
+        }
+
+        .theory-list {
+            padding-left: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            margin-top: 4px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="app-shell">
+    <!-- 1. TOPO: NOME TAP TOK + SELETOR DE MODO (STRAIGHT PADRÃO, COMPARE NA DIREITA) -->
+    <header class="top-bar">
+        <div class="brand">
+            <span class="brand-title">TAP TOK</span>
+            <span class="brand-sub">Laboratório de Ritmo</span>
+        </div>
+
+        <div class="seg-group" id="viewModeSelector" title="Modo de visualização">
+            <button type="button" class="seg-btn active" data-view="straight">STRAIGHT</button>
+            <button type="button" class="seg-btn" data-view="triplets">TRIPLETS</button>
+            <button type="button" class="seg-btn" data-view="compare">COMPARE</button>
+        </div>
+    </header>
+
+    <!-- 2. CONTROLES GERAIS E TRANSPORTE COMPACTOS -->
+    <section class="control-strip" aria-label="Controles e Reprodução">
+        <!-- Linha 1: Compasso, BPM e Metrônomo -->
+        <div class="control-row">
+            <div class="seg-group" id="meterSelector" title="Fórmula de Compasso">
+                <button type="button" class="seg-btn active" data-beats="4">4/4</button>
+                <button type="button" class="seg-btn" data-beats="3">3/4</button>
+            </div>
+
+            <div class="bpm-box" title="Andamento (40 a 240 BPM)">
+                <button type="button" class="bpm-step" id="bpmMinusBtn" aria-label="Diminuir BPM">−</button>
+                <span class="bpm-val" id="bpmValueDisplay">100 BPM</span>
+                <button type="button" class="bpm-step" id="bpmPlusBtn" aria-label="Aumentar BPM">+</button>
+                <input type="range" id="bpmSlider" class="bpm-slider" min="40" max="240" value="100">
+            </div>
+
+            <button type="button" class="ctrl-btn btn-metro active" id="metroToggleBtn" title="Ativar/Desativar Metrônomo">
+                <span class="metro-dot" id="metroDot"></span>
+                <span id="metroText">METRÔNOMO</span>
+            </button>
+        </div>
+
+        <!-- Linha 2: Play/Pause, Stop, Loop, Aleatório, Limpar -->
+        <div class="control-row">
+            <button type="button" class="ctrl-btn btn-play" id="playPauseBtn">
+                <span id="playPauseIcon">▶</span>
+                <span id="playPauseText">PLAY</span>
+            </button>
+            <button type="button" class="ctrl-btn btn-stop" id="stopResetBtn" title="Parar e Reiniciar">
+                <span>⏹ STOP</span>
+            </button>
+            <button type="button" class="ctrl-btn btn-loop active" id="loopToggleBtn" title="Loop de 2 compassos">
+                <span id="loopText">🔁 LOOP</span>
+            </button>
+            <button type="button" class="ctrl-btn" id="randomPatternBtn" title="Gerar Ritmo Aleatório">
+                <span>🎲 ALEATÓRIO</span>
+            </button>
+            <button type="button" class="ctrl-btn" id="clearAllBtn" title="Limpar todas as células">
+                <span>🗑️ LIMPAR</span>
+            </button>
+        </div>
+    </section>
+
+    <!-- 3. BLOCO 1 INTERCALADO: SEQUENCIADOR STRAIGHT + PARTITURA STRAIGHT -->
+    <section class="track-block straight-block" id="straightBlock" aria-label="Sequenciador e Partitura Straight">
+        <div class="track-bar">
+            <div class="track-title-group">
+                <span class="track-title">STRAIGHT (Binário • 1 e)</span>
+                <span class="track-hint">2 partes iguais/tempo</span>
+            </div>
+            <div class="track-tools">
+                <select id="straightSoundSelect" class="sound-select" aria-label="Som Straight">
+                    <option value="snare" selected>Caixa (Snare)</option>
+                    <option value="tap">Sapateado (Tap)</option>
+                    <option value="kick">Bumbo (Kick)</option>
+                    <option value="hihat">Chimbal (Hi-Hat)</option>
+                </select>
+                <button type="button" class="mute-btn" id="straightMuteBtn">MUTE</button>
+            </div>
+        </div>
+
+        <div class="measures-banner">
+            <div class="measure-tag"><span>Compasso 1</span><span id="m1TagStraight">4/4</span></div>
+            <div class="measure-tag"><span>Compasso 2</span><span id="m2TagStraight">4/4</span></div>
+        </div>
+
+        <!-- Grade de 2 Compassos Straight -->
+        <div class="two-measures-grid" id="straightGrid"></div>
+
+        <!-- Partitura SVG Straight Imediatamente Abaixo -->
+        <div class="score-box">
+            <svg id="straightScoreSvg" class="track-score-svg" viewBox="0 0 800 62" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"></svg>
+        </div>
+    </section>
+
+    <!-- 4. BLOCO 2 INTERCALADO: SEQUENCIADOR TRIPLETS/SWING + PARTITURA TRIPLETS -->
+    <section class="track-block triplet-block hidden" id="tripletBlock" aria-label="Sequenciador e Partitura Tercina e Swing">
+        <div class="track-bar">
+            <div class="track-title-group">
+                <span class="track-title">TERCINA / SWING (Ternário • 1 &amp; e)</span>
+                <span class="track-hint">3 partes/tempo</span>
+            </div>
+            <div class="track-tools">
+                <select id="tripletSoundSelect" class="sound-select" aria-label="Som Tercina">
+                    <option value="tap" selected>Sapateado (Tap)</option>
+                    <option value="hihat">Chimbal (Hi-Hat)</option>
+                    <option value="snare">Caixa (Snare)</option>
+                    <option value="kick">Bumbo (Kick)</option>
+                </select>
+                <button type="button" class="mute-btn" id="tripletMuteBtn">MUTE</button>
+            </div>
+        </div>
+
+        <div class="measures-banner">
+            <div class="measure-tag"><span>Compasso 1</span><span id="m1TagTriplet">4/4</span></div>
+            <div class="measure-tag"><span>Compasso 2</span><span id="m2TagTriplet">4/4</span></div>
+        </div>
+
+        <!-- Grade de 2 Compassos Triplets -->
+        <div class="two-measures-grid" id="tripletGrid"></div>
+
+        <!-- Partitura SVG Triplets Imediatamente Abaixo -->
+        <div class="score-box">
+            <svg id="tripletScoreSvg" class="track-score-svg" viewBox="0 0 800 68" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"></svg>
+        </div>
+    </section>
+
+    <!-- 5. ENTENDA O RITMO: EXEMPLOS IMEDIATOS + GUIA COMPACTO -->
+    <section class="pedagogy-bar" aria-label="Entenda o Ritmo">
+        <div class="preset-header">
+            <span>🎓 Entenda o Ritmo (Toque para ouvir):</span>
+            <span id="statusIndicator">Parado</span>
+        </div>
+
+        <div class="presets-grid">
+            <button type="button" class="preset-btn" data-preset="straight">▶ Straight (1 e)</button>
+            <button type="button" class="preset-btn" data-preset="triplet">▶ Tercina (1 &amp; e)</button>
+            <button type="button" class="preset-btn swing-preset" data-preset="swing">▶ Swing (Longo-Curto)</button>
+            <button type="button" class="preset-btn" data-preset="compare-2v3">▶ Comparar 2x3</button>
+        </div>
+
+        <div class="concept-summary">
+            <div class="concept-item c-straight">
+                <strong>Straight (1 e):</strong> Tempo dividido em 2 partes iguais.
+            </div>
+            <div class="concept-item c-triplet">
+                <strong>Tercina (1 &amp; e):</strong> Tempo dividido em 3 partes iguais.
+            </div>
+            <div class="concept-item c-swing">
+                <strong>Swing:</strong> Sensação de <strong>Longo e Curto</strong> na base ternária (pulso 1 longo + pulso final curto).
+            </div>
+        </div>
+    </section>
+
+    <!-- 6. DEDICATÓRIA E CRÉDITO OBRIGATÓRIO -->
+    <footer class="footer-credit">
+        <div class="footer-dedication">Dedicado à turma de sapateado da Corpo e Arte</div>
+        <div class="footer-author">TAP TOK • Desenvolvido pelo <strong>Professor Glauber Santiago</strong></div>
+    </footer>
+
+    <!-- 7. ACORDEON EXPLICATIVO: GUIA COMPLETO DE TEORIA RÍTMICA PARA SAPATEADORES (LEIGOS) -->
+    <details class="theory-accordion">
+        <summary class="theory-summary">
+            <span>📚 Guia Completo: Teoria Musical e Ritmo para Sapateadores (Toque para abrir)</span>
+            <span class="theory-summary-arrow">▼</span>
+        </summary>
+        <div class="theory-content">
+            <p>
+                <strong>Bem-vindo(a) ao TAP TOK!</strong> No sapateado (<em>Tap Dance</em>), nós não somos apenas dançarinos: nossos pés são verdadeiros instrumentos de percussão. Você não precisa ter estudado partitura ou conservatório para dominar o ritmo. Este guia foi escrito em linguagem simples, direta e prática para traduzir os mistérios da música para o seu corpo e para as suas chapinhas!
+            </p>
+
+            <div class="theory-topic">
+                <h3>1. O Pulso (Tempo / Beat) e o Andamento (BPM)</h3>
+                <p>
+                    Toda música tem um "coração" batendo de forma constante do início ao fim. Na música, chamamos cada batida desse coração de <strong>Pulso</strong> ou <strong>Tempo</strong> (em inglês, <em>Beat</em>). É exatamente quando você bate o pé ou estala os dedos instintivamente ao ouvir uma canção.
+                </p>
+                <p>
+                    Quando você liga o botão <strong>METRÔNOMO</strong> aqui no aplicativo, aquele "clique" constante que você escuta está marcando os tempos da música.
+                </p>
+                <div class="theory-highlight">
+                    <strong>O que é BPM?</strong> Significa <em>Batidas Por Minuto</em>. Ele mede a velocidade (o andamento) da música. Em <strong>60 BPM</strong>, temos 1 batida a cada segundo (como o ponteiro de um relógio). Em <strong>100 BPM</strong>, a caminhada é moderada; em <strong>180 BPM</strong>, seus pés precisam correr!
+                </div>
+            </div>
+
+            <div class="theory-topic">
+                <h3>2. O que é um Compasso (4/4 e 3/4)?</h3>
+                <p>
+                    Se a música fosse apenas uma fila infinita de batidas iguais (<em>tum, tum, tum, tum...</em>), a gente se perderia facilmente na coreografia. Por isso, a música organiza os tempos dentro de pequenas "caixinhas" chamadas <strong>Compassos</strong>.
+                </p>
+                <p>
+                    Perceba que o metrônomo faz um som mais agudo (um "apito" mais forte) sempre no <strong>Tempo 1</strong>. Esse é o início da caixinha!
+                </p>
+                <ul class="theory-list">
+                    <li><strong>Compasso 4/4:</strong> É o mais comum no Jazz, Pop, Rock e no Sapateado. Cada caixinha guarda <strong>4 tempos</strong> (contamos: <em>1, 2, 3, 4 | 1, 2, 3, 4</em>).</li>
+                    <li><strong>Compasso 3/4:</strong> É o compasso da Valsa. Cada caixinha guarda <strong>3 tempos</strong> (contamos: <em>1, 2, 3 | 1, 2, 3</em>).</li>
+                </ul>
+                <p>
+                    Aqui no <strong>TAP TOK</strong>, a tela mostra sempre <strong>2 compassos inteiros lado a lado</strong>, separados por uma linha branca vertical bem visível no meio.
+                </p>
+            </div>
+
+            <div class="theory-topic">
+                <h3>3. O Segredo da Subdivisão: Como "fatiar" um Tempo</h3>
+                <p>
+                    Imagine que cada tempo do metrônomo é uma pizza inteira ou um passo que você dá caminhando na rua. Se você fizer apenas <strong>um som de sapato por clique</strong> (como um <em>Step</em> ou um <em>Stamp</em> somente nos números <strong>1, 2, 3, 4</strong>), você está tocando o tempo inteiro, sem dividir.
+                </p>
+                <p>
+                    Mas no sapateado nós adoramos fazer vários sons rápidos dentro de um único clique do metrônomo (como um <em>Flap</em>, um <em>Shuffle</em> ou um <em>Riff</em>). Para que esses sons não fiquem bagunçados, precisamos <strong>fatiar o tempo em partes iguais</strong>. Isso se chama <strong>Subdivisão Rítmica</strong>! Existem duas grandes maneiras de fatiar o tempo: em <strong>2 partes</strong> ou em <strong>3 partes</strong>.
+                </p>
+            </div>
+
+            <div class="theory-topic">
+                <h3>4. Subdivisão Binária: O Ritmo "STRAIGHT" (1 e)</h3>
+                <p>
+                    A palavra <em>Straight</em> significa "reto" ou "direto". Aqui, nós pegamos cada tempo do compasso e cortamos exatamente ao meio, em <strong>2 fatias iguais</strong>:
+                </p>
+                <ul class="theory-list">
+                    <li>A primeira metade cai exatamente junto com o clique do metrônomo: chamamos pelo número do tempo (<strong>1, 2, 3, 4</strong>).</li>
+                    <li>A segunda metade fica exatamente no ar, entre um clique e outro: chamamos de <strong>"e"</strong>.</li>
+                </ul>
+                <div class="theory-highlight">
+                    <strong>Como contar falando e sapateando:</strong> Fale em voz alta de forma bem igual, como um robô ou uma marcha militar: <strong>"1 e 2 e 3 e 4 e"</strong> (ou pense na palavra <em>"CA-SA, CA-SA, CA-SA, CA-SA"</em>). Quando fazemos um <em>Shuffle</em> ou um <em>Flap</em> "reto" (binário), os dois sons da chapinha têm exatamente a mesma duração!
+                </div>
+            </div>
+
+            <div class="theory-topic">
+                <h3>5. Subdivisão Ternária: A "TERCINA" / Triplet (1 &amp; e)</h3>
+                <p>
+                    E se, em vez de dividir o tempo em duas metades, nós cortarmos esse mesmo tempo em <strong>3 fatias iguaizinhas</strong>? Quando fazemos 3 sons iguais dentro do espaço de 1 único tempo, damos o nome de <strong>Tercina</strong> (em inglês, <em>Triplet</em>).
+                </p>
+                <p>
+                    Aqui no aplicativo, cada tempo da linha laranja possui 3 botões: <strong>1 &amp; e</strong> (depois <strong>2 &amp; e</strong>, <strong>3 &amp; e</strong>, <strong>4 &amp; e</strong>).
+                </p>
+                <div class="theory-highlight triplet-hl">
+                    <strong>Dica de ouro para sentir a Tercina:</strong> Pense em palavras de três sílabas faladas no ritmo de cada pulso, como <em>"MÚ-SI-CA, MÚ-SI-CA"</em> ou <em>"BA-NA-NA, BA-NA-NA"</em>. No sapateado, passos de 3 sons (como <em>Shuffle-Step</em> contínuo ou <em>Riff de 3 sons</em>) encaixam como uma luva dentro da tercina!
+                </div>
+            </div>
+
+            <div class="theory-topic">
+                <h3>6. Afinal, o que é o SWING? (A mágica do Longo e Curto!)</h3>
+                <p>
+                    Muitas pessoas acham que <em>Swing</em> e <em>Tercina</em> são a mesma coisa, mas não são! <strong>A tercina é a régua que divide o tempo em 3; já o Swing é uma maneira especial de escolher quais partes dessa tercina nós vamos tocar.</strong>
+                </p>
+                <p>
+                    Olhe para os 3 pedacinhos da tercina (<strong>1 &amp; e</strong>). No <strong>Swing</strong>, nós fazemos o seguinte:
+                </p>
+                <ul class="theory-list">
+                    <li>Tocamos o primeiro pedacinho (<strong>1</strong>) e deixamos o segundo pedacinho do meio (<strong>&amp;</strong>) em silêncio, segurando o pé. Com isso, o primeiro som dura o espaço de dois pedacinhos: ele fica <strong>LONGO</strong>!</li>
+                    <li>Depois, tocamos o último pedacinho (<strong>e</strong>) bem pertinho do próximo tempo: ele fica <strong>CURTO</strong>!</li>
+                </ul>
+                <div class="theory-highlight swing-hl">
+                    <strong>O Segredo do Balanço (Longo - Curto):</strong> Enquanto no ritmo <em>Straight</em> os dois sons são iguais (<em>TA-TA, TA-TA, TA-TA</em>), no <strong>Swing</strong> os dois sons têm tamanhos diferentes: <strong>LONGO - CURTO, LONGO - CURTO</strong> (<em>TAAA-ta, TAAA-ta, TAAA-ta</em> — igual ao bater do coração ou ao cavalgar!). Quando você faz um <em>Flap</em> ou um <em>Shuffle</em> no Jazz e espera um pouquinho mais antes do segundo som da chapinha, você está <strong>swingando</strong>!
+                </div>
+            </div>
+
+            <div class="theory-topic">
+                <h3>7. Como entender os desenhos da Partitura (Sem medo das bolinhas!)</h3>
+                <p>
+                    Logo abaixo de cada fileira de botões, o <strong>TAP TOK</strong> desenha automaticamente a partitura de percussão. Você não precisa decorar nomes difíceis, basta observar a lógica visual:
+                </p>
+                <ul class="theory-list">
+                    <li><strong>Uma bolinha com haste sozinha (Semínima):</strong> Aparece quando você acende apenas o número do tempo (<strong>1</strong>) e deixa o resto apagado. Significa <strong>1 som longo que preenche o tempo inteiro</strong>.</li>
+                    <li><strong>Duas bolinhas unidas por uma barra grossa no topo (Colcheias):</strong> Aparecem no <em>Straight</em> quando você acende o <strong>1</strong> e o <strong>e</strong>. São <strong>2 sons iguais</strong> dividindo o tempo ao meio.</li>
+                    <li><strong>Desenhos sem bolinha (Pausas):</strong> Na música, o silêncio também é escrito! Quando você deixa o tempo todo apagado ou acende apenas a segunda metade (o <strong>e</strong>), aparece um símbolo de <strong>Pausa</strong> no lugar onde o pé fica em silêncio esperando.</li>
+                    <li><strong>O número "3" em cima das notas (Tercina):</strong> Sempre que o tempo é fatiado em 3 partes, a partitura coloca um número <strong>3</strong> (com uma barra ou um colchete) para avisar ao músico: <em>"Atenção, cabem 3 pedacinhos iguais dentro deste tempo!"</em>.</li>
+                    <li><strong>A escrita do Swing:</strong> Repare no que acontece na partitura quando você toca o <strong>Swing</strong> (botão 1 aceso, meio apagado, botão final aceso): aparece um colchete rosa com o número <strong>3</strong> contendo <strong>Nota + Pausa no meio + Nota no final</strong>. É o retrato visual perfeito do nosso <strong>Longo e Curto</strong>!</li>
+                </ul>
+            </div>
+
+            <div class="theory-topic">
+                <h3>8. Como estudar com o TAP TOK no seu treino de Sapateado</h3>
+                <ul class="theory-list">
+                    <li><strong>Passo 1:</strong> Toque nos botões da seção <em>"Entenda o Ritmo"</em> logo acima para escutar a diferença entre o <strong>Straight (1 e)</strong>, a <strong>Tercina (1 &amp; e)</strong> e o <strong>Swing (Longo-Curto)</strong>.</li>
+                    <li><strong>Passo 2:</strong> Tente bater palmas ou fazer <em>Flaps</em> / <em>Shuffles</em> junto com o som do aplicativo, começando devagar (ex: 75 BPM) e subindo aos poucos.</li>
+                    <li><strong>Passo 3:</strong> Crie seus próprios desafios! Apague algumas células para criar "buracos" (pausas e contratempos) e tente sapatear exatamente o que você programou!</li>
+                </ul>
+            </div>
+        </div>
+    </details>
+</div>
+
+<script>
+/**
+ * ============================================================================
+ * TAP TOK — ARQUITETURA COMPACTA E SINCRONIZADA
+ * - SequencerState: Estado dos 2 compassos (8 tempos em 4/4 ou 6 em 3/4),
+ *   iniciando em modo 'straight'.
+ * - RhythmLogic: Presets e manipulação das matrizes rítmicas.
+ * - AudioEngine: Síntese Web Audio API + Agendador preciso de 6 sub-ticks/tempo.
+ * - GridRenderer: Renderiza os 2 compassos inteiros na largura da tela com
+ *   contagem "1 e", "2 e"... (Straight) e "1 & e", "2 & e"... (Triplets).
+ * - ScoreRenderer: Desenha as duas partituras SVG individuais alinhadas tempo a tempo
+ *   logo abaixo de cada sequenciador.
+ * ============================================================================
+ */
+
+/* 1. ESTADO DO SEQUENCIADOR */
+const SequencerState = {
+    beatsPerMeasure: 4,     // 4 (4/4) ou 3 (3/4)
+    numMeasures: 2,         // Exatamente 2 compassos lado a lado
+    bpm: 100,
+    isPlaying: false,
+    loop: true,
+    metronomeOn: true,
+    viewMode: 'straight',   // Padrão inicial: 'straight' ('straight' | 'triplets' | 'compare')
+
+    straightSound: 'snare',
+    tripletSound: 'tap',
+    straightMuted: false,
+    tripletMuted: false,
+
+    // 8 tempos no total (4 por compasso em 4/4)
+    straight: [
+        [1, 0], [1, 1], [1, 0], [1, 1],
+        [1, 0], [0, 1], [1, 1], [1, 0]
+    ],
+    triplets: [
+        [1, 0, 1], [1, 0, 1], [1, 1, 1], [1, 0, 0],
+        [1, 0, 1], [1, 0, 1], [1, 1, 1], [1, 0, 0]
+    ],
+
+    currentBeatIndex: -1,
+    currentSubTick: -1,
+
+    getTotalBeats() {
+        return this.beatsPerMeasure * this.numMeasures;
+    }
+};
+
+/* 2. LÓGICA RÍTMICA E PRESETS */
+const RhythmLogic = {
+    clearAll() {
+        for (let b = 0; b < 8; b++) {
+            SequencerState.straight[b] = [0, 0];
+            SequencerState.triplets[b] = [0, 0, 0];
+        }
+    },
+
+    randomize() {
+        const sPatterns = [[1, 0], [1, 1], [0, 1], [0, 0]];
+        const tPatterns = [
+            [1, 0, 1], [1, 1, 1], [1, 1, 0], [1, 0, 0],
+            [0, 1, 1], [0, 1, 0], [0, 0, 1], [0, 0, 0]
+        ];
+        const total = SequencerState.getTotalBeats();
+        for (let b = 0; b < total; b++) {
+            const isDownbeat = (b % SequencerState.beatsPerMeasure === 0);
+            if (isDownbeat) {
+                SequencerState.straight[b] = Math.random() > 0.4 ? [1, 1] : [1, 0];
+                const downT = [[1, 0, 1], [1, 1, 1], [1, 0, 0]];
+                SequencerState.triplets[b] = [...downT[Math.floor(Math.random() * downT.length)]];
+            } else {
+                SequencerState.straight[b] = [...sPatterns[Math.floor(Math.random() * sPatterns.length)]];
+                SequencerState.triplets[b] = [...tPatterns[Math.floor(Math.random() * tPatterns.length)]];
+            }
+        }
+    },
+
+    applyPreset(name) {
+        this.clearAll();
+        const total = SequencerState.getTotalBeats();
+
+        if (name === 'straight') {
+            SequencerState.viewMode = 'straight';
+            for (let b = 0; b < total; b++) {
+                SequencerState.straight[b] = [1, 1];
+                SequencerState.triplets[b] = [0, 0, 0];
+            }
+        } else if (name === 'triplet') {
+            SequencerState.viewMode = 'triplets';
+            for (let b = 0; b < total; b++) {
+                SequencerState.straight[b] = [0, 0];
+                SequencerState.triplets[b] = [1, 1, 1];
+            }
+        } else if (name === 'swing') {
+            // Swing Longo-Curto: 1ª e 3ª subdivisões da tercina [1, 0, 1]
+            SequencerState.viewMode = 'triplets';
+            for (let b = 0; b < total; b++) {
+                const isLastBeat = (b % SequencerState.beatsPerMeasure === SequencerState.beatsPerMeasure - 1);
+                SequencerState.straight[b] = [1, 0];
+                SequencerState.triplets[b] = isLastBeat ? [1, 0, 0] : [1, 0, 1];
+            }
+        } else if (name === 'compare-2v3') {
+            SequencerState.viewMode = 'compare';
+            for (let b = 0; b < total; b++) {
+                SequencerState.straight[b] = [1, 1];
+                SequencerState.triplets[b] = [1, 1, 1];
+            }
+        }
+    }
+};
+
+/* 3. MOTOR DE ÁUDIO (WEB AUDIO API) */
+const AudioEngine = {
+    ctx: null,
+    noiseBuffer: null,
+    schedulerTimerId: null,
+    visualRafId: null,
+    lookaheadMs: 25.0,
+    scheduleAheadSec: 0.12,
+    nextSubTickTime: 0.0,
+    currentGlobalSubTick: 0,
+    visualQueue: [],
+
+    init() {
+        if (!this.ctx) {
+            const AudioCtx = window.AudioContext || window.webkitAudioContext;
+            this.ctx = new AudioCtx();
+            this.createNoiseBuffer();
+        }
+        if (this.ctx.state === 'suspended') {
+            this.ctx.resume();
+        }
+    },
+
+    createNoiseBuffer() {
+        const size = this.ctx.sampleRate * 0.5;
+        const buffer = this.ctx.createBuffer(1, size, this.ctx.sampleRate);
+        const data = buffer.getChannelData(0);
+        for (let i = 0; i < size; i++) {
+            data[i] = Math.random() * 2 - 1;
+        }
+        this.noiseBuffer = buffer;
+    },
+
+    playKick(time) {
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(140, time);
+        osc.frequency.exponentialRampToValueAtTime(35, time + 0.18);
+        gain.gain.setValueAtTime(0.9, time);
+        gain.gain.exponentialRampToValueAtTime(0.001, time + 0.2);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start(time);
+        osc.stop(time + 0.21);
+    },
+
+    playSnare(time) {
+        const osc = this.ctx.createOscillator();
+        const oscGain = this.ctx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(180, time);
+        osc.frequency.exponentialRampToValueAtTime(90, time + 0.07);
+        oscGain.gain.setValueAtTime(0.4, time);
+        oscGain.gain.exponentialRampToValueAtTime(0.001, time + 0.09);
+        osc.connect(oscGain);
+        oscGain.connect(this.ctx.destination);
+        osc.start(time);
+        osc.stop(time + 0.1);
+
+        const noise = this.ctx.createBufferSource();
+        noise.buffer = this.noiseBuffer;
+        const filter = this.ctx.createBiquadFilter();
+        filter.type = 'highpass';
+        filter.frequency.setValueAtTime(950, time);
+        const nGain = this.ctx.createGain();
+        nGain.gain.setValueAtTime(0.5, time);
+        nGain.gain.exponentialRampToValueAtTime(0.001, time + 0.14);
+        noise.connect(filter);
+        filter.connect(nGain);
+        nGain.connect(this.ctx.destination);
+        noise.start(time);
+        noise.stop(time + 0.15);
+    },
+
+    playHiHat(time) {
+        const noise = this.ctx.createBufferSource();
+        noise.buffer = this.noiseBuffer;
+        const filter = this.ctx.createBiquadFilter();
+        filter.type = 'highpass';
+        filter.frequency.setValueAtTime(6500, time);
+        const gain = this.ctx.createGain();
+        gain.gain.setValueAtTime(0.4, time);
+        gain.gain.exponentialRampToValueAtTime(0.001, time + 0.06);
+        noise.connect(filter);
+        filter.connect(gain);
+        gain.connect(this.ctx.destination);
+        noise.start(time);
+        noise.stop(time + 0.065);
+    },
+
+    playTapShoe(time) {
+        const noise = this.ctx.createBufferSource();
+        noise.buffer = this.noiseBuffer;
+        const bp = this.ctx.createBiquadFilter();
+        bp.type = 'bandpass';
+        bp.frequency.setValueAtTime(2700, time);
+        bp.Q.setValueAtTime(3.0, time);
+        const nGain = this.ctx.createGain();
+        nGain.gain.setValueAtTime(0.7, time);
+        nGain.gain.exponentialRampToValueAtTime(0.001, time + 0.05);
+        noise.connect(bp);
+        bp.connect(nGain);
+        nGain.connect(this.ctx.destination);
+        noise.start(time);
+        noise.stop(time + 0.055);
+
+        const wood = this.ctx.createOscillator();
+        const wGain = this.ctx.createGain();
+        wood.type = 'sine';
+        wood.frequency.setValueAtTime(650, time);
+        wood.frequency.exponentialRampToValueAtTime(210, time + 0.04);
+        wGain.gain.setValueAtTime(0.55, time);
+        wGain.gain.exponentialRampToValueAtTime(0.001, time + 0.045);
+        wood.connect(wGain);
+        wGain.connect(this.ctx.destination);
+        wood.start(time);
+        wood.stop(time + 0.05);
+    },
+
+    triggerVoice(voice, time) {
+        this.init();
+        const t = time || this.ctx.currentTime;
+        if (voice === 'kick') this.playKick(t);
+        else if (voice === 'snare') this.playSnare(t);
+        else if (voice === 'hihat') this.playHiHat(t);
+        else this.playTapShoe(t);
+    },
+
+    playMetronome(time, isFirstBeat) {
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(isFirstBeat ? 1350 : 900, time);
+        gain.gain.setValueAtTime(isFirstBeat ? 0.32 : 0.2, time);
+        gain.gain.exponentialRampToValueAtTime(0.001, time + 0.04);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start(time);
+        osc.stop(time + 0.045);
+    },
+
+    scheduleSubTick(globalSubTick, time) {
+        const beatIndex = Math.floor(globalSubTick / 6);
+        const subTick = globalSubTick % 6;
+        const isFirstBeat = (beatIndex % SequencerState.beatsPerMeasure === 0);
+
+        if (subTick === 0 && SequencerState.metronomeOn) {
+            this.playMetronome(time, isFirstBeat);
+        }
+
+        const allowStraight = (SequencerState.viewMode !== 'triplets') && !SequencerState.straightMuted;
+        if (allowStraight) {
+            if (subTick === 0 && SequencerState.straight[beatIndex][0] === 1) {
+                this.triggerVoice(SequencerState.straightSound, time);
+            } else if (subTick === 3 && SequencerState.straight[beatIndex][1] === 1) {
+                this.triggerVoice(SequencerState.straightSound, time);
+            }
+        }
+
+        const allowTriplets = (SequencerState.viewMode !== 'straight') && !SequencerState.tripletMuted;
+        if (allowTriplets) {
+            if (subTick === 0 && SequencerState.triplets[beatIndex][0] === 1) {
+                this.triggerVoice(SequencerState.tripletSound, time);
+            } else if (subTick === 2 && SequencerState.triplets[beatIndex][1] === 1) {
+                this.triggerVoice(SequencerState.tripletSound, time);
+            } else if (subTick === 4 && SequencerState.triplets[beatIndex][2] === 1) {
+                this.triggerVoice(SequencerState.tripletSound, time);
+            }
+        }
+
+        this.visualQueue.push({ beatIndex, subTick, time });
+    },
+
+    advanceSubTick() {
+        const secPerBeat = 60.0 / SequencerState.bpm;
+        this.nextSubTickTime += (secPerBeat / 6.0);
+        this.currentGlobalSubTick++;
+
+        const totalSubTicks = SequencerState.getTotalBeats() * 6;
+        if (this.currentGlobalSubTick >= totalSubTicks) {
+            if (SequencerState.loop) {
+                this.currentGlobalSubTick = 0;
+            } else {
+                const delayMs = Math.max(0, (this.nextSubTickTime - this.ctx.currentTime) * 1000);
+                setTimeout(() => {
+                    if (SequencerState.isPlaying && !SequencerState.loop) this.stop();
+                }, delayMs);
+                clearInterval(this.schedulerTimerId);
+                this.schedulerTimerId = null;
+            }
+        }
+    },
+
+    schedulerLoop() {
+        while (
+            this.schedulerTimerId !== null &&
+            this.nextSubTickTime < this.ctx.currentTime + this.scheduleAheadSec
+        ) {
+            this.scheduleSubTick(this.currentGlobalSubTick, this.nextSubTickTime);
+            this.advanceSubTick();
+        }
+    },
+
+    visualSyncLoop() {
+        if (!SequencerState.isPlaying) return;
+        const now = this.ctx.currentTime;
+        while (this.visualQueue.length > 0 && this.visualQueue[0].time <= now + 0.01) {
+            const evt = this.visualQueue.shift();
+            if (
+                SequencerState.currentBeatIndex !== evt.beatIndex ||
+                SequencerState.currentSubTick !== evt.subTick
+            ) {
+                SequencerState.currentBeatIndex = evt.beatIndex;
+                SequencerState.currentSubTick = evt.subTick;
+                GridRenderer.highlightPlayhead(evt.beatIndex, evt.subTick);
+                ScoreRenderer.highlightBeat(evt.beatIndex);
+            }
+        }
+        this.visualRafId = requestAnimationFrame(() => this.visualSyncLoop());
+    },
+
+    togglePlay() {
+        this.init();
+        if (SequencerState.isPlaying) {
+            SequencerState.isPlaying = false;
+            clearInterval(this.schedulerTimerId);
+            this.schedulerTimerId = null;
+            cancelAnimationFrame(this.visualRafId);
+            this.visualRafId = null;
+            this.visualQueue = [];
+            UIController.updateTransportUI();
+        } else {
+            SequencerState.isPlaying = true;
+            if (SequencerState.currentBeatIndex < 0) {
+                this.currentGlobalSubTick = 0;
+            }
+            this.visualQueue = [];
+            this.nextSubTickTime = this.ctx.currentTime + 0.04;
+            this.schedulerTimerId = setInterval(() => this.schedulerLoop(), this.lookaheadMs);
+            this.visualSyncLoop();
+            UIController.updateTransportUI();
+        }
+    },
+
+    stop() {
+        SequencerState.isPlaying = false;
+        clearInterval(this.schedulerTimerId);
+        this.schedulerTimerId = null;
+        cancelAnimationFrame(this.visualRafId);
+        this.visualRafId = null;
+        this.visualQueue = [];
+        this.currentGlobalSubTick = 0;
+        SequencerState.currentBeatIndex = -1;
+        SequencerState.currentSubTick = -1;
+
+        GridRenderer.clearPlayhead();
+        ScoreRenderer.highlightBeat(-1);
+        UIController.updateTransportUI();
+    }
+};
+
+/* 4. RENDERIZADOR DAS GRADES (2 COMPASSOS INTEIROS NA LARGURA DA TELA) */
+const GridRenderer = {
+    render() {
+        const beatsPerM = SequencerState.beatsPerMeasure;
+        const totalBeats = SequencerState.getTotalBeats(); // 8 ou 6
+
+        // Atualiza rótulos de compasso
+        const meterText = `${beatsPerM}/4`;
+        document.getElementById('m1TagStraight').textContent = meterText;
+        document.getElementById('m2TagStraight').textContent = meterText;
+        document.getElementById('m1TagTriplet').textContent = meterText;
+        document.getElementById('m2TagTriplet').textContent = meterText;
+
+        // Visibilidade dos blocos conforme o modo
+        document.getElementById('straightBlock').classList.toggle('hidden', SequencerState.viewMode === 'triplets');
+        document.getElementById('tripletBlock').classList.toggle('hidden', SequencerState.viewMode === 'straight');
+
+        const straightGrid = document.getElementById('straightGrid');
+        const tripletGrid = document.getElementById('tripletGrid');
+        straightGrid.style.gridTemplateColumns = `repeat(${totalBeats}, minmax(0, 1fr))`;
+        tripletGrid.style.gridTemplateColumns = `repeat(${totalBeats}, minmax(0, 1fr))`;
+
+        straightGrid.innerHTML = '';
+        tripletGrid.innerHTML = '';
+
+        for (let b = 0; b < totalBeats; b++) {
+            const beatNumberInMeasure = (b % beatsPerM) + 1; // 1, 2, 3, (4)
+            const isBeatOne = (beatNumberInMeasure === 1);
+            const isEndOfMeasureOne = (b === beatsPerM - 1);
+
+            // --- COLUNA DE TEMPO STRAIGHT (Rótulos: "1", "e" / "2", "e" / ...) ---
+            const sCol = document.createElement('div');
+            sCol.className = `beat-col ${isBeatOne ? 'beat-one' : ''} ${isEndOfMeasureOne ? 'measure-end' : ''}`;
+            sCol.dataset.beatCol = b;
+
+            const sSubRow = document.createElement('div');
+            sSubRow.className = 'subcells cols-2';
+            const sLabels = [`${beatNumberInMeasure}`, 'e'];
+
+            for (let sub = 0; sub < 2; sub++) {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                const isActive = SequencerState.straight[b][sub] === 1;
+                btn.className = `seq-cell straight-cell ${sub === 0 ? 'head-cell' : ''} ${isActive ? 'active' : ''}`;
+                btn.dataset.track = 'straight';
+                btn.dataset.beat = b;
+                btn.dataset.sub = sub;
+                btn.textContent = sLabels[sub];
+                btn.addEventListener('click', () => UIController.onCellClick('straight', b, sub));
+                sSubRow.appendChild(btn);
+            }
+            sCol.appendChild(sSubRow);
+            straightGrid.appendChild(sCol);
+
+            // --- COLUNA DE TEMPO TRIPLETS (Rótulos: "1", "&", "e" / "2", "&", "e" / ...) ---
+            const tCol = document.createElement('div');
+            tCol.className = `beat-col ${isBeatOne ? 'beat-one' : ''} ${isEndOfMeasureOne ? 'measure-end' : ''}`;
+            tCol.dataset.beatCol = b;
+
+            const tSubRow = document.createElement('div');
+            tSubRow.className = 'subcells cols-3';
+            const tLabels = [`${beatNumberInMeasure}`, '&', 'e'];
+
+            for (let sub = 0; sub < 3; sub++) {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                const isActive = SequencerState.triplets[b][sub] === 1;
+                btn.className = `seq-cell triplet-cell ${sub === 0 ? 'head-cell' : ''} ${isActive ? 'active' : ''}`;
+                btn.dataset.track = 'triplets';
+                btn.dataset.beat = b;
+                btn.dataset.sub = sub;
+                btn.textContent = tLabels[sub];
+                btn.addEventListener('click', () => UIController.onCellClick('triplets', b, sub));
+                tSubRow.appendChild(btn);
+            }
+            tCol.appendChild(tSubRow);
+            tripletGrid.appendChild(tCol);
+        }
+    },
+
+    updateCellButton(track, beatIndex, subIndex) {
+        const isActive = track === 'straight'
+            ? SequencerState.straight[beatIndex][subIndex] === 1
+            : SequencerState.triplets[beatIndex][subIndex] === 1;
+        const btn = document.querySelector(
+            `.seq-cell[data-track="${track}"][data-beat="${beatIndex}"][data-sub="${subIndex}"]`
+        );
+        if (btn) btn.classList.toggle('active', isActive);
+    },
+
+    highlightPlayhead(beatIndex, subTick) {
+        this.clearPlayhead();
+
+        // Destaca a coluna do tempo atual nas duas grades
+        document.querySelectorAll(`[data-beat-col="${beatIndex}"]`).forEach(el => {
+            el.classList.add('playing-beat');
+        });
+
+        // Pisca o LED do metrônomo no início do tempo
+        if (subTick === 0 && SequencerState.metronomeOn) {
+            const dot = document.getElementById('metroDot');
+            if (dot) {
+                dot.classList.add('pulse');
+                setTimeout(() => dot.classList.remove('pulse'), 80);
+            }
+        }
+
+        // Sub-célula Straight (0..2 -> sub 0, 3..5 -> sub 1)
+        const sSub = subTick < 3 ? 0 : 1;
+        const sBtn = document.querySelector(`.seq-cell[data-track="straight"][data-beat="${beatIndex}"][data-sub="${sSub}"]`);
+        if (sBtn) sBtn.classList.add('playhead-active');
+
+        // Sub-célula Triplets (0..1 -> sub 0, 2..3 -> sub 1, 4..5 -> sub 2)
+        const tSub = Math.floor(subTick / 2);
+        const tBtn = document.querySelector(`.seq-cell[data-track="triplets"][data-beat="${beatIndex}"][data-sub="${tSub}"]`);
+        if (tBtn) tBtn.classList.add('playhead-active');
+
+        const mNum = Math.floor(beatIndex / SequencerState.beatsPerMeasure) + 1;
+        const bNum = (beatIndex % SequencerState.beatsPerMeasure) + 1;
+        const ind = document.getElementById('statusIndicator');
+        if (ind) ind.textContent = `C${mNum} • Tempo ${bNum}`;
+    },
+
+    clearPlayhead() {
+        document.querySelectorAll('.playing-beat').forEach(el => el.classList.remove('playing-beat'));
+        document.querySelectorAll('.playhead-active').forEach(el => el.classList.remove('playhead-active'));
+    }
+};
+
+/* 5. RENDERIZADOR DAS DUAS PARTITURAS INTERCALADAS (SVG ALINHADO AOS TEMPOS) */
+const ScoreRenderer = {
+    render() {
+        this.renderStraightScore();
+        this.renderTripletScore();
+        if (SequencerState.currentBeatIndex >= 0) {
+            this.highlightBeat(SequencerState.currentBeatIndex);
+        }
+    },
+
+    /**
+     * Desenha a partitura SVG da linha Straight (100% alinhada com as colunas da grade)
+     */
+    renderStraightScore() {
+        const svg = document.getElementById('straightScoreSvg');
+        if (!svg) return;
+
+        const beatsPerM = SequencerState.beatsPerMeasure;
+        const totalBeats = SequencerState.getTotalBeats();
+        const width = 800;
+        const height = 62;
+        const staffY = 40;
+        const beatW = width / totalBeats;
+
+        let out = '';
+
+        // Fundo de cada tempo e divisórias de tempo/compasso
+        for (let b = 0; b < totalBeats; b++) {
+            const x = b * beatW;
+            const isBeatOne = (b % beatsPerM === 0);
+            out += `
+                <rect id="s-score-hl-${b}" x="${x + 1}" y="2" width="${beatW - 2}" height="${height - 4}"
+                      rx="3" fill="${isBeatOne ? 'rgba(253,224,71,0.03)' : 'transparent'}" />
+            `;
+            if (b > 0 && b !== beatsPerM) {
+                out += `<line x1="${x}" y1="8" x2="${x}" y2="${height - 6}" stroke="#162032" stroke-width="1" stroke-dasharray="2,2" />`;
+            }
+        }
+
+        // Linha única da pauta de percussão
+        out += `<line x1="4" y1="${staffY}" x2="${width - 4}" y2="${staffY}" stroke="#475569" stroke-width="1.8" />`;
+
+        // Barra central forte entre Compasso 1 e Compasso 2
+        const midX = width / 2;
+        out += `<line x1="${midX}" y1="10" x2="${midX}" y2="${height - 6}" stroke="#f8fafc" stroke-width="2.5" />`;
+
+        // Barra dupla final
+        out += `
+            <line x1="${width - 6}" y1="12" x2="${width - 6}" y2="${height - 8}" stroke="#cbd5e1" stroke-width="1.5" />
+            <line x1="${width - 2}" y1="12" x2="${width - 2}" y2="${height - 8}" stroke="#cbd5e1" stroke-width="3" />
+        `;
+
+        // Figuras musicais em cada tempo
+        for (let b = 0; b < totalBeats; b++) {
+            const beatX = b * beatW;
+            out += this.drawStraightBeat(beatX, beatW, staffY, SequencerState.straight[b]);
+        }
+
+        svg.innerHTML = out;
+    },
+
+    /**
+     * Desenha a partitura SVG da linha Triplets/Swing (100% alinhada com as colunas da grade)
+     */
+    renderTripletScore() {
+        const svg = document.getElementById('tripletScoreSvg');
+        if (!svg) return;
+
+        const beatsPerM = SequencerState.beatsPerMeasure;
+        const totalBeats = SequencerState.getTotalBeats();
+        const width = 800;
+        const height = 68;
+        const staffY = 46;
+        const beatW = width / totalBeats;
+
+        let out = '';
+
+        for (let b = 0; b < totalBeats; b++) {
+            const x = b * beatW;
+            const isBeatOne = (b % beatsPerM === 0);
+            out += `
+                <rect id="t-score-hl-${b}" x="${x + 1}" y="2" width="${beatW - 2}" height="${height - 4}"
+                      rx="3" fill="${isBeatOne ? 'rgba(253,224,71,0.03)' : 'transparent'}" />
+            `;
+            if (b > 0 && b !== beatsPerM) {
+                out += `<line x1="${x}" y1="8" x2="${x}" y2="${height - 6}" stroke="#162032" stroke-width="1" stroke-dasharray="2,2" />`;
+            }
+        }
+
+        // Linha da pauta
+        out += `<line x1="4" y1="${staffY}" x2="${width - 4}" y2="${staffY}" stroke="#475569" stroke-width="1.8" />`;
+
+        // Barra divisória entre Compasso 1 e Compasso 2
+        const midX = width / 2;
+        out += `<line x1="${midX}" y1="10" x2="${midX}" y2="${height - 6}" stroke="#f8fafc" stroke-width="2.5" />`;
+
+        // Barra dupla final
+        out += `
+            <line x1="${width - 6}" y1="12" x2="${width - 6}" y2="${height - 8}" stroke="#cbd5e1" stroke-width="1.5" />
+            <line x1="${width - 2}" y1="12" x2="${width - 2}" y2="${height - 8}" stroke="#cbd5e1" stroke-width="3" />
+        `;
+
+        for (let b = 0; b < totalBeats; b++) {
+            const beatX = b * beatW;
+            out += this.drawTripletBeat(beatX, beatW, staffY, SequencerState.triplets[b]);
+        }
+
+        svg.innerHTML = out;
+    },
+
+    drawNote(x, y, color, hasFlag = false) {
+        const stemX = x + 5;
+        const topY = y - 24;
+        let s = `
+            <ellipse cx="${x}" cy="${y}" rx="5.8" ry="4.2" transform="rotate(-18 ${x} ${y})" fill="${color}" />
+            <line x1="${stemX}" y1="${y}" x2="${stemX}" y2="${topY}" stroke="${color}" stroke-width="2" stroke-linecap="round" />
+        `;
+        if (hasFlag) {
+            s += `<path d="M ${stemX} ${topY} C ${stemX + 7} ${topY + 4}, ${stemX + 9} ${topY + 10}, ${stemX + 5} ${topY + 16}" fill="none" stroke="${color}" stroke-width="2" stroke-linecap="round" />`;
+        }
+        return s;
+    },
+
+    drawQuarterRest(x, y) {
+        return `<path d="M ${x - 2} ${y - 11} L ${x + 3} ${y - 5} L ${x - 3} ${y} L ${x + 3} ${y + 6} C ${x - 2} ${y + 7}, ${x - 4} ${y + 11}, ${x - 1} ${y + 13}" fill="none" stroke="#94a3b8" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />`;
+    },
+
+    drawEighthRest(x, y) {
+        return `
+            <circle cx="${x - 1.5}" cy="${y - 4.5}" r="2.4" fill="#94a3b8" />
+            <path d="M ${x - 1.5} ${y - 4.5} Q ${x + 3} ${y - 4} ${x + 4} ${y - 8} L ${x - 1.5} ${y + 8}" fill="none" stroke="#94a3b8" stroke-width="1.8" stroke-linecap="round" />
+        `;
+    },
+
+    drawBracket3(x1, x2, topY, color = '#fbbf24') {
+        const mid = (x1 + x2) / 2;
+        return `
+            <path d="M ${x1} ${topY + 4} L ${x1} ${topY} L ${mid - 7} ${topY}" fill="none" stroke="${color}" stroke-width="1.4" />
+            <text x="${mid}" y="${topY + 3.5}" text-anchor="middle" fill="${color}" font-family="sans-serif" font-size="10" font-weight="900">3</text>
+            <path d="M ${mid + 7} ${topY} L ${x2} ${topY} L ${x2} ${topY + 4}" fill="none" stroke="${color}" stroke-width="1.4" />
+        `;
+    },
+
+    drawStraightBeat(beatX, beatW, staffY, cells) {
+        const c = '#38bdf8';
+        const key = `${cells[0]}${cells[1]}`;
+        const x1 = beatX + beatW * 0.28;
+        const x2 = beatX + beatW * 0.72;
+        const mid = beatX + beatW * 0.50;
+        const beamY = staffY - 24;
+
+        switch (key) {
+            case '00': return this.drawQuarterRest(mid, staffY);
+            case '10': return this.drawNote(x1, staffY, c, false);
+            case '11': return `
+                ${this.drawNote(x1, staffY, c, false)}
+                ${this.drawNote(x2, staffY, c, false)}
+                <line x1="${x1 + 5}" y1="${beamY}" x2="${x2 + 5}" y2="${beamY}" stroke="${c}" stroke-width="4" />
+            `;
+            case '01': return `
+                ${this.drawEighthRest(x1, staffY)}
+                ${this.drawNote(x2, staffY, c, true)}
+            `;
+            default: return '';
+        }
+    },
+
+    drawTripletBeat(beatX, beatW, staffY, cells) {
+        const c = '#f59e0b';
+        const key = `${cells[0]}${cells[1]}${cells[2]}`;
+        const x1 = beatX + beatW * 0.20;
+        const x2 = beatX + beatW * 0.50;
+        const x3 = beatX + beatW * 0.80;
+        const s1 = x1 + 5;
+        const s2 = x2 + 5;
+        const s3 = x3 + 5;
+        const beamY = staffY - 24;
+        const brkY = staffY - 35;
+
+        switch (key) {
+            case '000': return this.drawQuarterRest(x2, staffY);
+            case '100': return this.drawNote(x1, staffY, c, false);
+            case '111': return `
+                ${this.drawNote(x1, staffY, c, false)}
+                ${this.drawNote(x2, staffY, c, false)}
+                ${this.drawNote(x3, staffY, c, false)}
+                <line x1="${s1}" y1="${beamY}" x2="${s3}" y2="${beamY}" stroke="${c}" stroke-width="4" />
+                <text x="${(s1 + s3) / 2}" y="${beamY - 4}" text-anchor="middle" fill="#fde68a" font-family="sans-serif" font-size="10" font-weight="900">3</text>
+            `;
+            case '110': return `
+                ${this.drawNote(x1, staffY, c, false)}
+                ${this.drawNote(x2, staffY, c, false)}
+                <line x1="${s1}" y1="${beamY}" x2="${s2}" y2="${beamY}" stroke="${c}" stroke-width="4" />
+                ${this.drawEighthRest(x3, staffY)}
+                ${this.drawBracket3(x1 - 4, x3 + 5, brkY)}
+            `;
+            case '101': return `
+                ${this.drawNote(x1, staffY, c, true)}
+                ${this.drawEighthRest(x2, staffY)}
+                ${this.drawNote(x3, staffY, c, true)}
+                ${this.drawBracket3(x1 - 4, x3 + 7, brkY, '#f472b6')}
+            `;
+            case '011': return `
+                ${this.drawEighthRest(x1, staffY)}
+                ${this.drawNote(x2, staffY, c, false)}
+                ${this.drawNote(x3, staffY, c, false)}
+                <line x1="${s2}" y1="${beamY}" x2="${s3}" y2="${beamY}" stroke="${c}" stroke-width="4" />
+                ${this.drawBracket3(x1 - 4, x3 + 6, brkY)}
+            `;
+            case '010': return `
+                ${this.drawEighthRest(x1, staffY)}
+                ${this.drawNote(x2, staffY, c, true)}
+                ${this.drawEighthRest(x3, staffY)}
+                ${this.drawBracket3(x1 - 4, x3 + 5, brkY)}
+            `;
+            case '001': return `
+                ${this.drawEighthRest(x1, staffY)}
+                ${this.drawEighthRest(x2, staffY)}
+                ${this.drawNote(x3, staffY, c, true)}
+                ${this.drawBracket3(x1 - 4, x3 + 7, brkY)}
+            `;
+            default: return '';
+        }
+    },
+
+    highlightBeat(beatIndex) {
+        const total = SequencerState.getTotalBeats();
+        for (let b = 0; b < total; b++) {
+            const isBeatOne = (b % SequencerState.beatsPerMeasure === 0);
+            const defaultFill = isBeatOne ? 'rgba(253,224,71,0.03)' : 'transparent';
+            const activeFill = 'rgba(253,224,71,0.22)';
+
+            const sRect = document.getElementById(`s-score-hl-${b}`);
+            if (sRect) sRect.setAttribute('fill', b === beatIndex ? activeFill : defaultFill);
+
+            const tRect = document.getElementById(`t-score-hl-${b}`);
+            if (tRect) tRect.setAttribute('fill', b === beatIndex ? activeFill : defaultFill);
+        }
+    }
+};
+
+/* 6. CONTROLADOR DE INTERFACE (UIController) */
+const UIController = {
+    init() {
+        this.bindControls();
+        GridRenderer.render();
+        ScoreRenderer.render();
+        this.updateTransportUI();
+    },
+
+    onCellClick(track, beatIndex, subIndex) {
+        if (track === 'straight') {
+            const next = SequencerState.straight[beatIndex][subIndex] ? 0 : 1;
+            SequencerState.straight[beatIndex][subIndex] = next;
+            if (next === 1 && !SequencerState.straightMuted) {
+                AudioEngine.triggerVoice(SequencerState.straightSound);
+            }
+            GridRenderer.updateCellButton('straight', beatIndex, subIndex);
+            ScoreRenderer.renderStraightScore();
+        } else {
+            const next = SequencerState.triplets[beatIndex][subIndex] ? 0 : 1;
+            SequencerState.triplets[beatIndex][subIndex] = next;
+            if (next === 1 && !SequencerState.tripletMuted) {
+                AudioEngine.triggerVoice(SequencerState.tripletSound);
+            }
+            GridRenderer.updateCellButton('triplets', beatIndex, subIndex);
+            ScoreRenderer.renderTripletScore();
+        }
+        if (SequencerState.currentBeatIndex >= 0) {
+            ScoreRenderer.highlightBeat(SequencerState.currentBeatIndex);
+        }
+    },
+
+    bindControls() {
+        // Modo de visualização
+        document.querySelectorAll('#viewModeSelector .seg-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                SequencerState.viewMode = btn.dataset.view;
+                document.querySelectorAll('#viewModeSelector .seg-btn').forEach(b => b.classList.toggle('active', b === btn));
+                GridRenderer.render();
+                ScoreRenderer.render();
+            });
+        });
+
+        // Compasso (4/4 ou 3/4)
+        document.querySelectorAll('#meterSelector .seg-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const beats = parseInt(btn.dataset.beats, 10);
+                if (SequencerState.beatsPerMeasure === beats) return;
+                SequencerState.beatsPerMeasure = beats;
+                document.querySelectorAll('#meterSelector .seg-btn').forEach(b => b.classList.toggle('active', b === btn));
+                if (SequencerState.isPlaying) AudioEngine.stop();
+                GridRenderer.render();
+                ScoreRenderer.render();
+            });
+        });
+
+        // BPM
+        const slider = document.getElementById('bpmSlider');
+        const display = document.getElementById('bpmValueDisplay');
+        const updateBpm = (val) => {
+            const clamped = Math.max(40, Math.min(240, parseInt(val, 10) || 100));
+            SequencerState.bpm = clamped;
+            slider.value = clamped;
+            display.textContent = `${clamped} BPM`;
+        };
+        slider.addEventListener('input', (e) => updateBpm(e.target.value));
+        document.getElementById('bpmMinusBtn').addEventListener('click', () => updateBpm(SequencerState.bpm - 5));
+        document.getElementById('bpmPlusBtn').addEventListener('click', () => updateBpm(SequencerState.bpm + 5));
+
+        // Metrônomo
+        const metroBtn = document.getElementById('metroToggleBtn');
+        metroBtn.addEventListener('click', () => {
+            SequencerState.metronomeOn = !SequencerState.metronomeOn;
+            metroBtn.classList.toggle('active', SequencerState.metronomeOn);
+        });
+
+        // Transporte
+        document.getElementById('playPauseBtn').addEventListener('click', () => AudioEngine.togglePlay());
+        document.getElementById('stopResetBtn').addEventListener('click', () => AudioEngine.stop());
+
+        const loopBtn = document.getElementById('loopToggleBtn');
+        loopBtn.addEventListener('click', () => {
+            SequencerState.loop = !SequencerState.loop;
+            loopBtn.classList.toggle('active', SequencerState.loop);
+        });
+
+        document.getElementById('clearAllBtn').addEventListener('click', () => {
+            RhythmLogic.clearAll();
+            GridRenderer.render();
+            ScoreRenderer.render();
+        });
+
+        document.getElementById('randomPatternBtn').addEventListener('click', () => {
+            RhythmLogic.randomize();
+            GridRenderer.render();
+            ScoreRenderer.render();
+            if (!SequencerState.isPlaying) AudioEngine.togglePlay();
+        });
+
+        // Seletores de timbre e Mute
+        document.getElementById('straightSoundSelect').addEventListener('change', (e) => {
+            SequencerState.straightSound = e.target.value;
+            AudioEngine.triggerVoice(SequencerState.straightSound);
+        });
+        document.getElementById('tripletSoundSelect').addEventListener('change', (e) => {
+            SequencerState.tripletSound = e.target.value;
+            AudioEngine.triggerVoice(SequencerState.tripletSound);
+        });
+
+        const sMute = document.getElementById('straightMuteBtn');
+        sMute.addEventListener('click', () => {
+            SequencerState.straightMuted = !SequencerState.straightMuted;
+            sMute.classList.toggle('muted', SequencerState.straightMuted);
+        });
+
+        const tMute = document.getElementById('tripletMuteBtn');
+        tMute.addEventListener('click', () => {
+            SequencerState.tripletMuted = !SequencerState.tripletMuted;
+            tMute.classList.toggle('muted', SequencerState.tripletMuted);
+        });
+
+        // Presets Pedagógicos
+        document.querySelectorAll('.preset-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                RhythmLogic.applyPreset(btn.dataset.preset);
+                document.querySelectorAll('#viewModeSelector .seg-btn').forEach(b => {
+                    b.classList.toggle('active', b.dataset.view === SequencerState.viewMode);
+                });
+                GridRenderer.render();
+                ScoreRenderer.render();
+                AudioEngine.stop();
+                AudioEngine.togglePlay();
+            });
+        });
+    },
+
+    updateTransportUI() {
+        const playBtn = document.getElementById('playPauseBtn');
+        const playIcon = document.getElementById('playPauseIcon');
+        const playText = document.getElementById('playPauseText');
+        const ind = document.getElementById('statusIndicator');
+
+        if (SequencerState.isPlaying) {
+            playBtn.classList.add('playing');
+            playIcon.textContent = '⏸';
+            playText.textContent = 'PAUSE';
+        } else {
+            playBtn.classList.remove('playing');
+            playIcon.textContent = '▶';
+            playText.textContent = 'PLAY';
+            if (ind) ind.textContent = SequencerState.currentBeatIndex < 0 ? 'Parado' : 'Pausado';
+        }
+    }
+};
+
+window.addEventListener('DOMContentLoaded', () => UIController.init());
+</script>
+</body>
+</html>
